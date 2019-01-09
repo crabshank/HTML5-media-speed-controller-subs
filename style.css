@@ -1,0 +1,15 @@
+.vController-video-control {
+    position: absolute;
+    color: white;
+    line-height: 1.8em;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 13px;
+    cursor: default;
+    z-index: 2147483647;
+    opacity: 0.3;
+    background: black;
+    border-radius: 5px;
+   margin: 10px 10px 10px 15px;
+   padding: 5px; 
+}
+

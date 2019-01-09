@@ -1,0 +1,246 @@
+<html><head>
+		<title>Video Speed Control Options</title>
+		<style>
+			body
+			{
+			margin: 45px;
+			font-size: 20px;
+			}
+			.select-style{
+			font-size: 15px;
+			border: 1px solid #AAA;
+			background:#EEE;
+			width: 150px;
+			padding: 5px 8px;
+			}
+			button#save {
+    width: 116px;
+    color: #000000;
+    font-size: 19px;
+    background: #cccccc;
+    padding: 5px 10px 5px 10px;
+			}
+			
+			div#clrMtrx div {
+    width: 39px;
+    -webkit-appearance: textfield;
+    background-color: white;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    padding: 1px;
+    border-width: 2px;
+    border-style: inset;
+    border-color: initial;
+    border-image: initial;
+    text-rendering: auto;
+    color: initial;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+    -webkit-writing-mode: horizontal-tb !important;
+}
+div#clrMtrx {
+    max-width: 247px;
+}
+
+div#videoCSS{
+       height: auto;
+    width: 160px;
+    -webkit-appearance: textfield;
+    padding: 1px;
+    border-width: 4px;
+    border-style: inset;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+    -webkit-writing-mode: horizontal-tb !important;
+}
+			div#subtitlesCSS,div#subtitlesCSS_two{
+       height: auto;
+    -webkit-appearance: textfield;
+    padding: 1px;
+    border-width: 4px;
+    border-style: inset;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+    -webkit-writing-mode: horizontal-tb !important;
+    width: 502px;
+}
+input[type="text"] {
+    max-width: 76px;
+}
+		</style>
+	</head>
+	
+	<body>
+		<h1>HTML5 media speed controller options</h1>
+	Press buttons to record key presses or mouse scrolls to use as shortcuts. 
+	<br><br>
+	When recording shortcuts, modifiers may change displayed shortcut values. E.g. if "shift + ," is entered, it will be displayed as "shift + <".
+	<br><br>
+	Playback rate increment value: 
+<input id="pRIncrement" type="text" value="0.01">
+<br>
+
+Scroll over controller to change speed?<input type="checkbox" checked="" id="scrSpd">
+<br>
+Increase speed: 
+<button id="plusSpd" type="text">Record shortcut</button>
+<br>
+Decrease speed: 
+<button id="minusSpd" type="text" >Record shortcut</button>
+<br>
+Switch speed between current speed and: 
+<input id="swtchTo" type="text" value="1">
+<button id="switchSpd" type="text" >Record shortcut</button>
+
+<br><br>
+Skip (by x seconds): <input id="sIncrement" type="text" value="3">
+<br>
+Backwards: <button id="bck" type="text" value="">Record shortcut</button>
+<br>
+Forwards: <button id="fwrd" type="text" value="">Record shortcut</button>
+<br><br>
+Toggle hide controller: <button id="hideCtrlr" type="text" >Record shortcut</button>
+<br><br>
+Subtitles delay increment value (ms): 
+<input id="sDel" type="text" value="100">
+<br>
+Increase delay: <button id="sDelBUp" type="text" value="">Record shortcut</button>
+<br>
+Decrease delay: <button id="sDelBDwn" type="text" value="">Record shortcut</button>
+<br><br>
+Subtitles delay increment value (fine) (ms): 
+<input id="sDelF" type="text" value="20">
+<br>
+Increase delay: <button id="sDelBFUp" type="text" value="">Record shortcut</button>
+<br>
+Decrease delay: <button id="sDelBFDwn" type="text" value="">Record shortcut</button>
+<br><br>
+Change subtitles delay by 1ms: 
+<br>
+Increase delay:<button id="sDelB1Up" type="text" value="">Record shortcut</button>
+<br>
+Decrease delay: <button id="sDelB1Dwn" type="text" value="">Record shortcut</button>
+<br><br>
+Move subtitles up and down (%): 
+<input id="sMv" type="text" value="1">
+<br>
+Move up: <button id="sMvUp" type="text" value="">Record shortcut</button>
+<br>
+Move down: <button id="sMvDwn" type="text" value="">Record shortcut</button>
+
+<br><br>
+Activate Alt + number keys (to switch speed)? <input type="checkbox" checked="" id="Alt_no">
+<br><br>
+
+Use custom colour matrix css? <input type="checkbox" checked="" id="colMat">
+<br><br>
+
+<div id="clrMtrx">
+<div contenteditable="true" id="colMat1">1</div>
+<div contenteditable="true" id="colMat2">0</div>
+<div contenteditable="true" id="colMat3">0</div>
+<div contenteditable="true" id="colMat4">0</div>
+<div contenteditable="true" id="colMat5">0</div>
+<div contenteditable="true" id="colMat6">-0.11</div>
+<div contenteditable="true" id="colMat7">1.18</div>
+<div contenteditable="true" id="colMat8">-0.07</div>
+<div contenteditable="true" id="colMat9">0</div>
+<div contenteditable="true" id="colMat10">0</div>
+<div contenteditable="true" id="colMat11">0</div>
+<div contenteditable="true" id="colMat12">0</div>
+<div contenteditable="true" id="colMat13">1</div>
+<div contenteditable="true" id="colMat14">0</div>
+<div contenteditable="true" id="colMat15">0</div>
+<div contenteditable="true" id="colMat16">0</div>
+<div contenteditable="true" id="colMat17">0</div>
+<div contenteditable="true" id="colMat18">0</div>
+<div contenteditable="true" id="colMat19">1</div>
+<div contenteditable="true" id="colMat20">0</div>
+</div>
+<br>
+Use custom video css? <input type="checkbox" id="vidCSS">
+<div contenteditable="true" id="videoCSS" >
+brightness(1)<br>
+contrast(1)<br>
+saturate(1)<br>
+hue-rotate(0deg)<br>
+invert(0)<br>
+sepia(0)<br>
+blur(0px);
+</div>
+
+
+<br>
+Load video CSS calibration image: 
+		<input type="file" id="tstImg"/>
+<canvas id="canvas"></canvas>
+<br><br>
+Select font: <select id='selFont'></select>
+
+<br>
+<br>
+Subtitles' css (only certain CSS properties work here, <a href="https://www.w3.org/TR/webvtt1/#the-cue-pseudo-element">click here for the documentation</a>): <div contenteditable="true" id="subtitlesCSS" >
+background-color: transparent;<br>
+color: #ffff00;<br>
+font-size: 192%;<br>
+font-weight: bold;<br>
+text-shadow: 1px 4px black, 6px 2px black, -7px -1px black, 7px 4px black;
+</div>
+
+<br><br>
+
+Other subtitles' css:
+<br>
+(use transform:translate to set default position; translate((left/right)%, (top/bottom)%))
+<br>
+(Set the same values for transform and -webkit-transform): <div contenteditable="true" id="subtitlesCSS_two" >
+transform:translate(0%, -94%) scale(0.9,1);<br>
+-webkit-transform:translate(0%, -94%) scale(0.9,1);<br>
+</div>
+
+
+<br><br>
+
+
+
+
+Current style: 
+<br>
+<textarea id="testSub"></textarea>
+		<br>
+				<span>Blacklisted Sites (enter domain names separated by commas; use asterisks with slashes):</span>
+		<br>
+		<textarea id="blacklist"></textarea>
+		<div id="status"></div>
+				<button id="save" >Save</button>
+
+
+
+
+		<script src="options.js"></script>
+	
+
+</body></html>
