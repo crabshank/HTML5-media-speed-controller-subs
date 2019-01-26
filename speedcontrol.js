@@ -1168,46 +1168,55 @@ span.speed-indicator{
 
 						case 49:
 						case 97:
+						e.preventDefault();
 							this.setSpeed(1);
 							break;
 
 						case 50:
 						case 98:
+						e.preventDefault();
 							this.setSpeed(2);
 							break;
 
 						case 51:
 						case 99:
+						e.preventDefault();
 							this.setSpeed(3);
 							break;
 
 						case 52:
 						case 100:
+						e.preventDefault();
 							this.setSpeed(4);
 							break;
 
 						case 53:
 						case 101:
+						e.preventDefault();
 							this.setSpeed(5);
 							break;
 
 						case 54:
 						case 102:
+						e.preventDefault();
 							this.setSpeed(6);
 							break;
 
 						case 55:
 						case 103:
+						e.preventDefault();
 							this.setSpeed(7);
 							break;
 
 						case 56:
 						case 104:
+						e.preventDefault();
 							this.setSpeed(8);
 							break;
 
 						case 57:
 						case 105:
+						e.preventDefault();
 							this.setSpeed(9);
 							break;
 
@@ -1221,7 +1230,7 @@ span.speed-indicator{
 			}
 			else
 			{
-				e.preventDefault();
+				
 				tmpScObj = {
 					id: null,
 					ctrl: null,
@@ -1259,66 +1268,78 @@ span.speed-indicator{
 
 						if (i == 0)
 						{
+							e.preventDefault();
 							this.increaseSpeed();
 						}
 
 						if (i == 1)
 						{
+							e.preventDefault();
 							this.decreaseSpeed();
 						}
 
 						if (i == 2)
 						{
+							e.preventDefault();
 							this.switchSpeed();
 						}
 
 						if (i == 3)
 						{
+							e.preventDefault();
 							this.goBack();
 						}
 
 						if (i == 4)
 						{
+							e.preventDefault();
 							this.goForwards();
 						}
 
 						if (i == 5)
 						{
+							e.preventDefault();
 							this.showHide();
 						}
 
 						if (i == 6)
 						{
+							e.preventDefault();
 							s.d += sDel;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
 
 						if (i == 7)
 						{
+							e.preventDefault();
 							s.d -= sDel;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
 
 						if (i == 8)
 						{
+							e.preventDefault();
 							s.d += sDelF;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
 
 						if (i == 9)
 						{
+							e.preventDefault();
 							s.d -= sDelF;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
 
 						if (i == 10)
 						{
+							e.preventDefault();
 							s.d += 1;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
 
 						if (i == 11)
 						{
+							e.preventDefault();
 							s.d -= 1;
 							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 						}
@@ -1328,14 +1349,14 @@ span.speed-indicator{
 
 				if (JSON.stringify(scCompareE) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
 				{
-
+					e.preventDefault();
 					subUpDwn(sMv * -1);
 
 				}
 
 				if (JSON.stringify(scCompareE) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
 				{
-
+					e.preventDefault();
 					subUpDwn(sMv * 1);
 
 				}
@@ -1375,38 +1396,53 @@ span.speed-indicator{
 			{
 				return;
 			}
-			e.preventDefault();
-			e.stopPropagation();
+
 			if (e.target === this.switchButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.switchSpeed();
 			}
 			else if (e.target === this.backButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.goBack();
 			}
 			else if (e.target === this.minusButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.decreaseSpeed();
 			}
 			else if (e.target === this.plusButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.increaseSpeed();
 			}
 			else if (e.target === this.forwardButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.goForwards();
 			}
 			else if (e.target === this.subsButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.doSubs();
 			}
 			else if (e.target === this.closeButton_)
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.delete();
 			}
 			else
 			{
+				e.preventDefault();
+				e.stopPropagation();
 				this.cursor = 'grabbing';
 			}
 
@@ -1424,7 +1460,6 @@ span.speed-indicator{
 		}
 		else
 		{
-			e.preventDefault();
 
 			tmpScObj = {
 				id: null,
@@ -1463,66 +1498,78 @@ span.speed-indicator{
 
 					if (i == 0)
 					{
+						e.preventDefault();
 						this.increaseSpeed();
 					}
 
 					if (i == 1)
 					{
+						e.preventDefault();
 						this.decreaseSpeed();
 					}
 
 					if (i == 2)
 					{
+						e.preventDefault();
 						this.switchSpeed();
 					}
 
 					if (i == 3)
 					{
+						e.preventDefault();
 						this.goBack();
 					}
 
 					if (i == 4)
 					{
+						e.preventDefault();
 						this.goForwards();
 					}
 
 					if (i == 5)
 					{
+						e.preventDefault();
 						this.showHide();
 					}
 
 					if (i == 6)
 					{
+						e.preventDefault();
 						s.d += sDel;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
 
 					if (i == 7)
 					{
+						e.preventDefault();
 						s.d -= sDel;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
 
 					if (i == 8)
 					{
+						e.preventDefault();
 						s.d += sDelF;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
 
 					if (i == 9)
 					{
+						e.preventDefault();
 						s.d -= sDelF;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
 
 					if (i == 10)
 					{
+						e.preventDefault();
 						s.d += 1;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
 
 					if (i == 11)
 					{
+						e.preventDefault();
 						s.d -= 1;
 						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
 					}
@@ -1532,13 +1579,13 @@ span.speed-indicator{
 
 			if (JSON.stringify(scCompareE) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
 			{
-
+				e.preventDefault();
 				subUpDwn(-1 * sMv);
 			}
 
 			if (JSON.stringify(scCompareE) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
 			{
-
+				e.preventDefault();
 				subUpDwn(1 * sMv);
 			}
 
