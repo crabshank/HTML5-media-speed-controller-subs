@@ -864,16 +864,16 @@ span.speed-indicator{
 			for (let i = 0; i < s.track.track.cues.length; i++)
 			{
 				var subtitleCurr = s.track.track.cues[i].text.split('\n');
-				subtitleCurr.forEach(function(line){
+				for (let k=0; k<subtitleCurr.length;k++){
 					var tmpBalDiv = document.createElement('div');
-					tmpBalDiv.style.display = 'none';
+					document.getElementsByTagName("body")[0].appendChild(tmpBalDiv);
 					tmpBalDiv.className = 'balance-text';
-					tmpBalDiv.innerHTML = line;
+					tmpBalDiv.innerHTML = subtitleCurr[k];
 					balanceText(tmpBalDiv);
-					line= tmpBalDiv.innerHTML;
+					subtitleCurr[k]= tmpBalDiv.innerHTML;
 					tmpBalDiv.remove();
-				});
-				s.track.track.cues[i].text = subtitleCurr.join('\n');
+				}
+				s.track.track.cues[i].text = subtitleCurr.join('\n').split('<br data-owner="balance-text">').join('\n');
 			}
 			s.track.track.mode = "showing";
 			s.blcd = 1;
