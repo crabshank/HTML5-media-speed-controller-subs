@@ -864,14 +864,13 @@ span.speed-indicator{
 			for (let i = 0; i < s.track.track.cues.length; i++)
 			{
 				var subtitleCurr = s.track.track.cues[i].text.split('\n');
-				subtitleCurr.forEach(function(index)
-				{
+				subtitleCurr.forEach(function(line){
 					var tmpBalDiv = document.createElement('div');
 					tmpBalDiv.style.display = 'none';
 					tmpBalDiv.className = 'balance-text';
-					tmpBalDiv.innerHTML = subtitleCurr[index];
+					tmpBalDiv.innerHTML = line;
 					balanceText.updateWatched();
-					subtitleCurr[index] = tmpBalDiv.innerHTML;
+					line= tmpBalDiv.innerHTML;
 					tmpBalDiv.remove();
 				});
 				s.track.track.cues[i].text = subtitleCurr.join('\n');
