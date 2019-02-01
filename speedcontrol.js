@@ -869,7 +869,7 @@ span.speed-indicator{
 					tmpBalDiv.style.display = 'none';
 					tmpBalDiv.className = 'balance-text';
 					tmpBalDiv.innerHTML = line;
-					balanceText.updateWatched();
+					balanceText(tmpBalDiv);
 					line= tmpBalDiv.innerHTML;
 					tmpBalDiv.remove();
 				});
