@@ -226,7 +226,7 @@ function save_options()
 	},
 	{
 		n: "subsStylTwo",
-		s: "transform:translate(0%, -94%) scale(0.9,1);\n-webkit-transform:translate(0%, -94%) scale(0.9,1);"
+		s: "transform: translate(0%, -94%) scale(0.9,1);\n-webkit-transform: translate(0%, -94%) scale(0.9,1);"
 	}]
 
 	objs = [
@@ -868,6 +868,7 @@ span.speed-indicator{
 					var tmpBalDiv = document.createElement('div');
 					document.getElementsByTagName("body")[0].appendChild(tmpBalDiv);
 					tmpBalDiv.className = 'balance-text';
+					tmpBalDiv.style = subsStyl + " " + subsStylTwo + "text-align:center;";
 					tmpBalDiv.innerHTML = subtitleCurr[k];
 					balanceText(tmpBalDiv);
 					subtitleCurr[k]= tmpBalDiv.innerHTML;
