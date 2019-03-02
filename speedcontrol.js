@@ -1040,10 +1040,10 @@ span.speed-indicator{
 						}
 					}, false)
 
-				}
+				
 				this.subsButton_.style.backgroundColor = "#36ff07";
 				subButnStatus = 1;
-
+				}
 				break;
 
 			case 1:
