@@ -956,7 +956,7 @@ span.speed-indicator{
 					var fr = new FileReader();
 					fr.onload = function()
 					{
-						subti.dom.textContent = this.result;
+						subti.dom.value = this.result;
 					}
 
 					fr.readAsText(this.files[0]);
