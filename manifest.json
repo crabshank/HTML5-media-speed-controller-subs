@@ -5,7 +5,7 @@
   "page": "options.html"
   },     
     "manifest_version": 2,
-    "version": "1.2.5",
+    "version": "1.2.6",
   "content_scripts": [
     {
       "matches": ["http://*/*",

@@ -1154,7 +1154,7 @@ span.speed-indicator{
 			e.path[0].tagName == 'TEXTAREA' ||
 			e.path[0].isContentEditable)
 		{
-			return;
+			e.stopPropagation();
 		}
 		else
 		{
@@ -1168,55 +1168,55 @@ span.speed-indicator{
 
 						case 49:
 						case 97:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(1);
 							break;
 
 						case 50:
 						case 98:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(2);
 							break;
 
 						case 51:
 						case 99:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(3);
 							break;
 
 						case 52:
 						case 100:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(4);
 							break;
 
 						case 53:
 						case 101:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(5);
 							break;
 
 						case 54:
 						case 102:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(6);
 							break;
 
 						case 55:
 						case 103:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(7);
 							break;
 
 						case 56:
 						case 104:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(8);
 							break;
 
 						case 57:
 						case 105:
-						e.preventDefault();
+						e.stopPropagation();
 							this.setSpeed(9);
 							break;
 
@@ -1664,7 +1664,7 @@ span.speed-indicator{
 		var topPosition;
 		if (e.clientY < getOffset(this.videoEl_).top)
 		{
-			ltopPosition = 0;
+			topPosition = 0;
 		}
 		else if (e.clientY > getOffset(this.videoEl_).top + this.videoEl_.clientHeight)
 		{
