@@ -509,7 +509,7 @@ function runExt()
 		vController.vidControl.instances.forEach((instance) => instance.delete());
 		vController.vidControl.instances = [];
 	}
-
+	
 	vController.vidControl.prototype.createDom = function()
 	{
 		var container = document.createElement('div');
@@ -1150,9 +1150,7 @@ span.speed-indicator{
 	vController.vidControl.prototype.handleKeyDown_ = function(e)
 	{
 
-		if (e.path[0].tagName == 'INPUT' ||
-			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable)
+		if (((e.path[0].tagName == 'INPUT')||(e.path[0].tagName == 'TEXTAREA')||(e.path[0].isContentEditable))&&(this.bgEl_.contains(e.path[0])))
 		{
 			e.stopPropagation();
 		}
@@ -1780,8 +1778,32 @@ span.speed-indicator{
 			...document.getElementsByTagName('video'),
 			...document.getElementsByTagName('audio')
 		];
+
+	if(vController.vidControl.instances.length>0){
+		vController.vidControl.instances.forEach(function(instance) {
+			var clnChk=0;
+			
+			for(let i=0;i<videoTags.length;i++){
+				if(instance.videoEl_!==videoTags[i]){
+					clnChk=0;
+				}else{
+					clnChk=1;
+					i=videoTags.length;
+				}
+			}
+		
+		if(clnChk==0){
+			vController.vidControl.instances=removeEls(instance,vController.vidControl.instances);
+			}
+		
+		});
+	}
+
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
+
+
+			
 			if ((videoTag.src.length > 0) || (videoTag.currentSrc.length > 0))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))
