@@ -1149,10 +1149,17 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.handleKeyDown_ = function(e)
 	{
-
-		if (((e.path[0].tagName == 'INPUT')||(e.path[0].tagName == 'TEXTAREA')||(e.path[0].isContentEditable))&&(this.bgEl_.contains(e.path[0])))
+		
+		if ((e.path[0].tagName == 'INPUT')||(e.path[0].tagName == 'TEXTAREA')||(e.path[0].isContentEditable))
 		{
+			if(this.bgEl_.contains(e.path[0]))
+			{
 			e.stopPropagation();
+			}
+			else
+			{
+			return;
+			}
 		}
 		else
 		{
