@@ -1734,14 +1734,23 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.rmng = function()
 	{
-		rem = (this.videoEl_.duration - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
 		let speed = this.videoEl_.playbackRate;
+		
+		if(!isFinite(this.videoEl_.duration)){
+		return speed.toLocaleString('en-GB',
+		{
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 7
+		});
+		}else{
+		rem = (this.videoEl_.duration - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
 		rem = cd_s_hmmss(rem);
 		return speed.toLocaleString('en-GB',
 		{
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 7
 		}) + " | " + rem;
+		}
 	}
 
 	vController.vidControl.prototype.swtch = function()
