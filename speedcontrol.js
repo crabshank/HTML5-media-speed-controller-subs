@@ -1737,11 +1737,22 @@ span.speed-indicator{
 		let speed = this.videoEl_.playbackRate;
 		
 		if(!isFinite(this.videoEl_.duration)){
+		let bufEnd=this.videoEl_.buffered.end(this.videoEl_.buffered.length-1);
+		if(isFinite(bufEnd)){
+		rem = (bufEnd - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
+		rem = cd_s_hmmss(rem);
+		return speed.toLocaleString('en-GB',
+		{
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 7
+		}) + " | " + rem;
+		}else{
 		return speed.toLocaleString('en-GB',
 		{
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 7
 		});
+		}
 		}else{
 		rem = (this.videoEl_.duration - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
 		rem = cd_s_hmmss(rem);
