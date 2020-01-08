@@ -562,6 +562,7 @@ span.speed-indicator{
 		bg.classList.add('vController-bg');
 		speedIndicator.classList.add('speed-indicator');
 		switchButton.classList.add('vController-btn', 'switcher');
+		switchButton.textContent = swtchTo + 'x';
 		backButton.textContent = '↶';
 		backButton.classList.add('vController-btn', 'back');
 		minusButton.textContent = '-';
@@ -590,7 +591,6 @@ span.speed-indicator{
 		this.forwardButton_ = forwardButton;
 		this.subsButton_ = subsButton;
 		this.closeButton_ = closeButton;
-
 		defOpacity = this.el_.style.opacity;
 	};
 
@@ -1735,10 +1735,12 @@ span.speed-indicator{
 	vController.vidControl.prototype.rmng = function()
 	{
 		let speed = this.videoEl_.playbackRate;
-		
+		if (speed!=0){
 		if(!isFinite(this.videoEl_.duration)){
+		
+		if(this.videoEl_.buffered.length>0){
 		let bufEnd=this.videoEl_.buffered.end(this.videoEl_.buffered.length-1);
-		if(isFinite(bufEnd)){
+		if((isFinite(bufEnd)) && (bufEnd>=0)){
 		rem = (bufEnd - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
 		rem = cd_s_hmmss(rem);
 		return speed.toLocaleString('en-GB',
@@ -1746,6 +1748,13 @@ span.speed-indicator{
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 7
 		}) + " | " + rem;
+		}else{
+		return speed.toLocaleString('en-GB',
+		{
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 7
+		});
+		}
 		}else{
 		return speed.toLocaleString('en-GB',
 		{
@@ -1762,18 +1771,15 @@ span.speed-indicator{
 			maximumFractionDigits: 7
 		}) + " | " + rem;
 		}
+		}else{
+			return "0.00";
+		}
 	}
 
 	vController.vidControl.prototype.swtch = function()
 	{
 		let speed = this.videoEl_.playbackRate;
-		
-		if (pR1 == speed)
-		{
-			return swtchTo + 'x';
-		}
-		else
-		{
+		if((!!isFinite(speed)) || (pR1 == speed)){
 
 			if (speed != swtchTo)
 			{
@@ -1791,7 +1797,10 @@ span.speed-indicator{
 					maximumFractionDigits: 7
 				}) + "x";
 			}
-		}
+	
+	}else{
+		return swtchTo + 'x';
+	}
 	}
 
 	vController.vidControl.prototype.delete = function()
