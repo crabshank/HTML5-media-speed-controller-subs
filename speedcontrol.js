@@ -1779,7 +1779,10 @@ span.speed-indicator{
 	vController.vidControl.prototype.swtch = function()
 	{
 		let speed = this.videoEl_.playbackRate;
-		if((!!isFinite(speed)) || (pR1 == speed)){
+		if(pR1 == speed){
+		return swtchTo + 'x';
+		}else{
+		if(!!isFinite(speed)){
 
 			if (speed != swtchTo)
 			{
@@ -1800,6 +1803,7 @@ span.speed-indicator{
 	
 	}else{
 		return swtchTo + 'x';
+	}
 	}
 	}
 
