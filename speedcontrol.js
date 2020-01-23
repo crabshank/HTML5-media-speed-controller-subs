@@ -752,7 +752,9 @@ span.speed-indicator{
 			mvLN.push(mvL[0].split(mvL[0].split(',')[1]).join(vtPos[i] + '%)'));
 			subsCSS.innerHTML = subsCSS.innerHTML.split(mvL[i]).join(mvLN[i]);
 		}
-
+		
+		console.log((mvL[0].split(mvL[0].split(',')[1])).join(((mvL[0].split(',')[1].split('%')[0].split('\n').join('').split(' ').join(''))*1+n*1)+'%)'));
+		
 	}
 
 	function subsDelay(track, origTrack, d, v, elm, bgElm)
