@@ -582,6 +582,7 @@ span.speed-indicator{
 		this.videoEl_.classList.add('vController-video');
 		this.el_ = container;
 		this.el_.classList.add(vController.vidControl.CLASS_NAME);
+		this.el_.style.zIndex=Number.MAX_SAFE_INTEGER;
 		this.bgEl_ = bg;
 		this.speedIndicator_ = speedIndicator;
 		this.switchButton_ = switchButton;
@@ -608,6 +609,7 @@ span.speed-indicator{
 				hideMulti++;
 
 				c.style.display = 'initial';
+				c.style.visibility = 'initial';
 
 				if ((hvrChk() == false) && (permashow !== 1))
 				{
@@ -617,6 +619,7 @@ span.speed-indicator{
 				function hideCtl()
 				{
 					c.style.display = 'none';
+					c.style.visibility = 'hidden';
 					hideMulti = 0;
 				}
 			}
@@ -1118,6 +1121,7 @@ span.speed-indicator{
 		if ((permashow == 0) && (permahide == 0))
 		{
 			this.el_.style.display = 'initial';
+			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '0.78';
 			permashow = 1;
 			clearTimeout(disap);
@@ -1131,6 +1135,7 @@ span.speed-indicator{
 			clearTimeout(disap);
 			//	c_hide(this.el_,this.bgEl_, this.videoEl_);
 			this.el_.style.display = 'none';
+			this.el_.style.visibility = 'hidden';
 			this.el_.style.opacity = '';
 
 			console.log('Perma-hide active!');
@@ -1140,6 +1145,7 @@ span.speed-indicator{
 			permahide = 0;
 			c_hide(this.el_, this.bgEl_, this.videoEl_);
 			this.el_.style.display = 'initial';
+			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '';
 			console.log('No permanence!');
 		}
