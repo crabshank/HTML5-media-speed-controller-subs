@@ -1,5 +1,14 @@
 var vController = vController || {};
 
+var hed=[...document.getElementsByTagName("head")][0];
+var bdy=[...document.getElementsByTagName("body")][0];
+
+var isolator=document.createElement('style');
+
+isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;};";
+
+var isol=0;
+
 let defOpacity;
 var openSRT;
 let subti = {
@@ -446,53 +455,58 @@ function runExt()
 
 		if (!isCurrentSiteBlacklisted())
 		{
-
-			if (colMat)
-			{
-
-				var divm = document.createElement('div');
-				divm.innerHTML = "<svg><filter id='filter-sample'><feColorMatrix type='matrix' values='" + clrMtrx + "'></feColorMatrix></filter></svg>";
-
-				divm.setAttribute('id', 'filter-sample_div');
-				divm.setAttribute('style', 'display: none;');
-				if (document.getElementById('filter-sample_div'))
-				{
-					document.getElementById('filter-sample_div').remove();
-				}
-				this.videoEl_.appendChild(divm);
-
-				console.log(divm);
-
-				if (vidCSS)
+			if(this.videoEl_.tagName=="VIDEO"){
+				
+				if (colMat)
 				{
 
-					this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample") ' + videoCSS;
+					var divm = document.createElement('div');
+					divm.innerHTML = "<svg><filter id='filter-sample'><feColorMatrix type='matrix' values='" + clrMtrx + "'></feColorMatrix></filter></svg>";
+
+					divm.setAttribute('id', 'filter-sample_div');
+					divm.setAttribute('style', 'display: none;');
+					if (document.getElementById('filter-sample_div'))
+					{
+						document.getElementById('filter-sample_div').remove();
+					}
+					this.videoEl_.appendChild(divm);
+
+					console.log(divm);
+
+					if (vidCSS)
+					{
+
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample") ' + videoCSS;
+
+					}
+					else
+					{
+
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample");';
+
+					}
+
+				}else{
+
+					if (vidCSS)
+					{
+
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: ' + videoCSS;
+
+					}
 
 				}
-				else
-				{
-
-					this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample");';
-
-				}
-
-			}
-			else
-			{
-
-				if (vidCSS)
-				{
-
-					this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: ' + videoCSS;
-
-				}
-
 			}
 
 			this.createDom();
 			this.enterDocument();
 			vController.vidControl.instances.push(this);
+			if (vController.vidControl.instances.length>1){
 			console.log(vController.vidControl.instances);
+			}else{
+			console.log(vController.vidControl.instances[0]);
+			}
+			this.videoEl_.setAttribute('def_ctrls', this.videoEl_.controls);
 		}
 		else
 		{
@@ -504,11 +518,11 @@ function runExt()
 
 	vController.vidControl.instances = [];
 
-	vController.vidControl.deleteAll = function()
+	/*vController.vidControl.deleteAll = function()
 	{
 		vController.vidControl.instances.forEach((instance) => instance.delete());
 		vController.vidControl.instances = [];
-	}
+	}*/
 	
 	vController.vidControl.prototype.createDom = function()
 	{
@@ -603,11 +617,11 @@ span.speed-indicator{
 
 		function showHide()
 		{
-
 			function shwHde(t)
 			{
+				
 				hideMulti++;
-
+				
 				c.style.display = 'initial';
 				c.style.visibility = 'initial';
 
@@ -623,14 +637,17 @@ span.speed-indicator{
 					hideMulti = 0;
 				}
 			}
-			if (hideMulti == 0)
-			{
-				shwHde(3000);
-			}
-			else
-			{
-				clearTimeout(disap);
-				shwHde(3000);
+			
+			if ((permashow!=1)&&(permahide!=1)){
+				if (hideMulti == 0)
+				{
+					shwHde(3000);
+				}
+				else
+				{
+					clearTimeout(disap);
+					shwHde(3000);
+				}
 			}
 		}
 
@@ -707,7 +724,7 @@ span.speed-indicator{
 				}
 			}
 		});
-
+		hed.insertAdjacentElement('afterbegin',isolator);
 		this.videoEl_.addEventListener('mouseenter', c_hide(this.el_, this.bgEl_, this.videoEl_), true);
 	};
 
@@ -871,7 +888,7 @@ span.speed-indicator{
 				var subtitleCurr = s.track.track.cues[i].text.split('\n');
 				for (let k=0; k<subtitleCurr.length;k++){
 					var tmpBalDiv = document.createElement('div');
-					document.getElementsByTagName("body")[0].appendChild(tmpBalDiv);
+					bdy.appendChild(tmpBalDiv);
 					tmpBalDiv.className = 'balance-text';
 					tmpBalDiv.style = subsStyl + " " + subsStylTwo + "text-align:center;";
 					tmpBalDiv.innerHTML = subtitleCurr[k];
@@ -956,8 +973,8 @@ span.speed-indicator{
 				openSRT.accept = ".srt";
 				subti.dom.parentNode.insertBefore(openSRT, subti.dom.nextSibling);
 
-				openSRT.addEventListener('change', function()
-				{
+				openSRT.onchange = function(){
+					
 					var fr = new FileReader();
 					fr.onload = function()
 					{
@@ -966,7 +983,7 @@ span.speed-indicator{
 
 					fr.readAsText(this.files[0]);
 
-				})
+				}
 
 				subButnStatus = 0;
 				break;
@@ -987,14 +1004,13 @@ span.speed-indicator{
 					this.videoEl_.appendChild(s.track);
 
 					s.vtt = 'WEBVTT\n\n' + subti.dom.value;
-
-					thisSub.videoEl_.play();
+					
 					console.log(s.track);
 					subsCSS = document.createElement("style");
 
 					subsCSS.type = "text/css";
 					subsCSS.innerHTML = "::cue {" + subsStyl + "} ::-webkit-media-text-track-display {" + subsStylTwo + "}";
-					document.getElementsByTagName("head")[0].appendChild(subsCSS);
+					hed.appendChild(subsCSS);
 
 					s.track.id = "subs1";
 					s.vtt = colour_subs(s.vtt);
@@ -1016,8 +1032,7 @@ span.speed-indicator{
 					s.delIndicator.textContent = ' ms';
 					openSRT.parentNode.insertBefore(s.delIndicator, thisSub.subsButton_.nextSibling);
 
-					s.track.addEventListener("cuechange", function()
-					{
+					s.track.oncuechange= function(){
 
 						if (s.origTrack == 0)
 						{
@@ -1040,12 +1055,14 @@ span.speed-indicator{
 								"text": tTxt
 							};
 							s.delIndicator.textContent="0 ms";
+							
+							thisSub.videoEl_.play();
+							
 							console.log("HTML5 media speed controller:\nReference track created!\nYou can set the subtitles' delay now!");
 							
 						}
-					}, false)
+					}
 
-				
 				this.subsButton_.style.backgroundColor = "#36ff07";
 				subButnStatus = 1;
 				}
@@ -1126,7 +1143,11 @@ span.speed-indicator{
 			permashow = 1;
 			clearTimeout(disap);
 			//c_hide(this.el_,this.bgEl_, this.videoEl_);
+			if(isol==1){
+			console.log('Perma-show active! - Video isolated.');
+			}else{
 			console.log('Perma-show active!');
+			}
 		}
 		else if ((permashow == 1) && (permahide == 0))
 		{
@@ -1137,22 +1158,37 @@ span.speed-indicator{
 			this.el_.style.display = 'none';
 			this.el_.style.visibility = 'hidden';
 			this.el_.style.opacity = '';
-
+			if(isol==1){
+			console.log('Perma-hide active! - Video isolated.');
+			}else{
 			console.log('Perma-hide active!');
+			}
 		}
 		else if ((permashow == 0) && (permahide == 1))
 		{
 			permahide = 0;
+			isol=(isol==0)?1:0;
+			if(isol==1){
+			isolator.innerHTML=isolator_HTML;
+			this.videoEl_.style.display = 'initial';
+			this.videoEl_.style.visibility = 'initial';
+			this.videoEl_.controls = true;
+			c_hide(this.el_, this.bgEl_, this.videoEl_);
+			console.log('No permanence! - Video isolated.');
+			}else{
+			isolator.innerHTML="";
+			this.videoEl_.controls=(this.videoEl_.getAttribute('def_ctrls')=='false')?false:true;
 			c_hide(this.el_, this.bgEl_, this.videoEl_);
 			this.el_.style.display = 'initial';
 			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '';
 			console.log('No permanence!');
-		}
-		else
-		{
+			}
+			
+		}else{
 			return;
 		}
+
 	};
 
 	vController.vidControl.prototype.handleKeyDown_ = function(e)
@@ -1450,7 +1486,9 @@ span.speed-indicator{
 			{
 				e.preventDefault();
 				e.stopPropagation();
-				this.delete();
+				permashow = 1;
+				permahide = 0;
+				this.showHide();
 			}
 			else
 			{
@@ -1815,16 +1853,16 @@ span.speed-indicator{
 	}
 	}
 
-	vController.vidControl.prototype.delete = function()
+	/*vController.vidControl.prototype.delete = function()
 	{
 		this.el_.parentNode.removeChild(this.el_);
-	};
+	};*/
 
 	vController.vidControl.insertAll = function()
 	{
 		var videoTags = [
-			...document.getElementsByTagName('video'),
-			...document.getElementsByTagName('audio')
+			...document.getElementsByTagName('VIDEO'),
+			...document.getElementsByTagName('AUDIO')
 		];
 
 	if(vController.vidControl.instances.length>0){
@@ -1849,9 +1887,6 @@ span.speed-indicator{
 
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
-
-
-			
 			if ((videoTag.src.length > 0) || (videoTag.currentSrc.length > 0))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))

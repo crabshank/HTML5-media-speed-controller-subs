@@ -1,3 +1,5 @@
+var hed = [...document.getElementsByTagName("head")][0];
+
 var obj_plusSpd = {
 	o:
 	{
@@ -346,7 +348,7 @@ function restore_options()
 
 var selectStyl = document.createElement('style');
 
-document.getElementsByTagName("head")[0].appendChild(selectStyl);
+hed.appendChild(selectStyl);
 
 console.log(v_selFont);
 
@@ -354,7 +356,7 @@ var egSub = document.getElementById('testSub');
 egSub.textContent = "Example line";
 var egSb = document.createElement('style');
 
-document.getElementsByTagName("head")[0].appendChild(egSb);
+hed.appendChild(egSb);
 
 v_save.addEventListener('click', save_options);
 
