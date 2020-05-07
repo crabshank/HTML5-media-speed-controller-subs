@@ -614,9 +614,11 @@ span.speed-indicator{
 
 	function c_hide(c, d, v)
 	{
-
 		function showHide()
 		{
+			
+		  v.controls=(isol==1)?true:v.controls;
+		  
 			function shwHde(t)
 			{
 				
