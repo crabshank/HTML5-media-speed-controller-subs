@@ -1967,7 +1967,7 @@ span.speed-indicator{
 
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
-			if (((videoTag.src.length > 0) || (videoTag.currentSrc.length > 0))||(videoTag.readyState!=0))
+			if ((videoTag.src.length > 0)||(videoTag.currentSrc.length > 0)||(videoTag.readyState!=0))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))
 				{
