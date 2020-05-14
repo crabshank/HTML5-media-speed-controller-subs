@@ -38,7 +38,7 @@ var tmpScObj = {
 var scCompareS = [];
 var scCompareE = [];
 
-s.vtt = "WEBVTT\n\n00:00:00.000 --> 9999:59:59.999\n"
+s.vtt = "WEBVTT\n\n00:00:00.000 --> 9999:59:59.999\n";
 
 function vttURL(t)
 {
@@ -54,7 +54,7 @@ function blacklistMatch(array, t)
 	var notFound = false;
 	if ((array.length == 1 && array[0] == "") || (array.length == 0))
 	{
-		return false
+		return false;
 	}
 	else
 	{
@@ -136,9 +136,9 @@ function restore_options()
 	{
 		if (Object.keys(items).length !== 0)
 		{
-			console.log(items);
+			//console.log(items);
 			objs = items.scObjs;
-			sets = items.settgs
+			sets = items.settgs;
 
 			scrSpd = sets[0].s;
 			pRIncrement = sets[1].s * 1;
@@ -236,7 +236,7 @@ function save_options()
 	{
 		n: "subsStylTwo",
 		s: "transform: translate(0%, -94%) scale(0.9,1);\n-webkit-transform: translate(0%, -94%) scale(0.9,1);"
-	}]
+	}];
 
 	objs = [
 	{
@@ -520,8 +520,8 @@ function runExt()
 
 	/*vController.vidControl.deleteAll = function()
 	{
-		vController.vidControl.instances.forEach((instance) => instance.delete());
-		vController.vidControl.instances = [];
+		instances.forEach((instance) => instance.delete());
+		instances = [];
 	}*/
 	
 	vController.vidControl.prototype.createDom = function()
@@ -697,7 +697,10 @@ span.speed-indicator{
 
 		this.speedIndicator_.textContent = this.rmng();
 		this.switchButton_.textContent = this.swtch();
-
+		this.videoEl_.addEventListener('canplay', function()
+		{
+			self.speedIndicator_.textContent = self.rmng();
+		});
 		this.videoEl_.addEventListener('ratechange', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
@@ -726,6 +729,7 @@ span.speed-indicator{
 				}
 			}
 		});
+		
 		hed.insertAdjacentElement('afterbegin',isolator);
 		this.videoEl_.addEventListener('mouseenter', c_hide(this.el_, this.bgEl_, this.videoEl_), true);
 	};
@@ -880,6 +884,44 @@ span.speed-indicator{
 
 	}
 
+	function get_tags (spr)
+	{
+	
+	var out_tags=[];
+	var start_tags=[];
+	var end_tags=[];
+	for (var i=0; i<spr.length; i++){
+	
+	var out_line='<';
+	var start_pos=-1;
+
+	if ((spr[i]=='<')&&(i<spr.length-1)){
+	
+		for (var k=i+1; k<spr.length; k++){
+		start_pos=i;
+		if (spr[k]=='<'){
+		//out_line='';
+		//start_pos=-1;
+		k=spr.length-1;
+		}else if (spr[k]=='>'){
+		out_line+='>';
+		out_tags.push(out_line);
+		start_tags.push(parseInt(start_pos));
+		end_tags.push(parseInt(k));
+		k=spr.length-1;
+		}else{
+		out_line+=spr[k];
+		}
+		
+		}
+	
+	}
+	
+	}
+	
+	return [out_tags,start_tags,end_tags];
+	}
+
 	function balanceSubs()
 	{
 		if (s.blcd !== 1)
@@ -889,16 +931,49 @@ span.speed-indicator{
 			{
 				var subtitleCurr = s.track.track.cues[i].text.split('\n');
 				for (let k=0; k<subtitleCurr.length;k++){
+					var spread=[...subtitleCurr[k]];
+					var line_tags=get_tags(spread); 
+					var de_tag=subtitleCurr[k];
+					dtag= Array.from(new Set(line_tags[0]));
+					if(dtag.length>0){
+					for (let m=0; m<dtag.length; m++){
+					de_tag=de_tag.split(dtag[m]).join('');
+					}
+					}
+					var de_tag_spr=[...de_tag];
 					var tmpBalDiv = document.createElement('div');
-					bdy.appendChild(tmpBalDiv);
+					document.getElementsByTagName("body")[0].appendChild(tmpBalDiv);
 					tmpBalDiv.className = 'balance-text';
-					tmpBalDiv.style = subsStyl + " " + subsStylTwo + "text-align:center;";
-					tmpBalDiv.innerHTML = subtitleCurr[k];
+					tmpBalDiv.innerHTML = de_tag;
+					tmpBalDiv.style="background-color: transparent; color: #ffff00; font-size: 192%; font-weight: bold; text-shadow: 1px 4px black, 6px 2px black, -7px -1px black, 7px 4px black; font-family: Segoe UI; transform: scale(0.9,1); -webkit-transform: scale(0.9,1); text-align:center;";
 					balanceText(tmpBalDiv);
-					subtitleCurr[k]= tmpBalDiv.innerHTML;
+					var split_pattern= [].slice.call(tmpBalDiv.innerHTML.split('<br data-owner="balance-text">'));
+					var pos_flag=0;
+					var out_tag_cnt=0;
+					var out_tag_cnt2=0;
+					var dtg  =0;
+					subtitleCurr[k]='';
+					for (let n=0; n<spread.length; n++){
+						if(n==line_tags[1][pos_flag]){
+						subtitleCurr[k]+=line_tags[0][pos_flag];
+						n=line_tags[2][pos_flag];
+						pos_flag++;
+						}else{
+						if((typeof split_pattern[out_tag_cnt]==='undefined')||(out_tag_cnt2<split_pattern[out_tag_cnt].length)){
+						subtitleCurr[k]+=de_tag_spr[dtg];
+						dtg++;
+						out_tag_cnt2++;
+						}else{
+						subtitleCurr[k]+='\n';
+						out_tag_cnt2=0;
+						out_tag_cnt++;
+						n--;
+						}
+						}
+					}
 					tmpBalDiv.remove();
 				}
-				s.track.track.cues[i].text = subtitleCurr.join('\n').split('<br data-owner="balance-text">').join('\n');
+				s.track.track.cues[i].text = subtitleCurr.join('\n');
 			}
 			s.track.track.mode = "showing";
 			s.blcd = 1;
@@ -925,7 +1000,7 @@ span.speed-indicator{
 					cols.push(op[i].match(/={1}[^>]+/g)[0].split(' ').join('').split('\n').join('').split('=').join('').split('"').join(''));
 					str = str.split(op[i]).join('<c.col_' + cols[i].split('#').join('') + '>');
 					
-					colStyls.push(' ::cue(c.col_' + cols[i].split('#').join('') + '){color: ' + cols[i] + ';}')
+					colStyls.push(' ::cue(c.col_' + cols[i].split('#').join('') + '){color: ' + cols[i] + ';}');
 
 				}
 				let finalColStyls = Array.from(new Set(colStyls));
@@ -1747,7 +1822,7 @@ span.speed-indicator{
 	{
 
 		var ss = "00";
-		var mm = "00"
+		var mm = "00";
 		var hh = "";
 
 		var hours = Math.floor(Math.ceil(s) / 3600);
@@ -1777,7 +1852,7 @@ span.speed-indicator{
 			ss = secs;
 		}
 
-		return hh + mm + ":" + ss
+		return hh + mm + ":" + ss;
 	}
 
 	vController.vidControl.prototype.rmng = function()
@@ -1881,6 +1956,9 @@ span.speed-indicator{
 			}
 		
 		if(clnChk==0){
+			if(typeof instance.bgEl_.parentNode!=='undefined'){
+			instance.el_.parentNode.removeChild(instance.el_);
+			}
 			vController.vidControl.instances=removeEls(instance,vController.vidControl.instances);
 			}
 		
@@ -1889,7 +1967,7 @@ span.speed-indicator{
 
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
-			if ((videoTag.src.length > 0) || (videoTag.currentSrc.length > 0))
+			if (((videoTag.src.length > 0) || (videoTag.currentSrc.length > 0))||(videoTag.readyState!=0))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))
 				{
