@@ -945,7 +945,7 @@ span.speed-indicator{
 					document.getElementsByTagName("body")[0].appendChild(tmpBalDiv);
 					tmpBalDiv.className = 'balance-text';
 					tmpBalDiv.innerHTML = de_tag;
-					tmpBalDiv.style="background-color: transparent; color: #ffff00; font-size: 192%; font-weight: bold; text-shadow: 1px 4px black, 6px 2px black, -7px -1px black, 7px 4px black; font-family: Segoe UI; transform: scale(0.9,1); -webkit-transform: scale(0.9,1); text-align:center;";
+					tmpBalDiv.style.cssText = subsStyl + " " + subsStylTwo + "text-align:center; visibility:hidden;";
 					balanceText(tmpBalDiv);
 					var split_pattern= [].slice.call(tmpBalDiv.innerHTML.split('<br data-owner="balance-text">'));
 					var pos_flag=0;
