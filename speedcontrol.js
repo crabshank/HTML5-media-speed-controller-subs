@@ -1956,7 +1956,7 @@ span.speed-indicator{
 			}
 		
 		if(clnChk==0){
-			if(typeof instance.bgEl_.parentNode!=='undefined'){
+			if((typeof instance.el_.parentNode!=='undefined')&&(instance.el_.parentNode!==null)){
 			instance.el_.parentNode.removeChild(instance.el_);
 			}
 			vController.vidControl.instances=removeEls(instance,vController.vidControl.instances);
