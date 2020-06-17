@@ -705,6 +705,10 @@ span.speed-indicator{
 		{
 			self.speedIndicator_.textContent = self.rmng();
 		});
+		this.videoEl_.addEventListener('durationchange', function()
+		{
+			self.speedIndicator_.textContent = self.rmng();
+		});
 		this.videoEl_.addEventListener('ratechange', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
