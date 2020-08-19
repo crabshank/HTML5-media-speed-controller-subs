@@ -689,7 +689,7 @@ span.speed-indicator{
 		var dragHandler = this.handleDragEndEvent_.bind(this);
 		this.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
 		// this.bgEl_.addEventListener('dblclick', dblClickHandler, true);
-		this.bgEl_.addEventListener('mousewheel', wheelHandler, true);
+		this.bgEl_.addEventListener('wheel', wheelHandler, true);
 		document.body.addEventListener('keydown', keydownHandler, true);
 
 		document.body.addEventListener('dragend', dragHandler, true);
