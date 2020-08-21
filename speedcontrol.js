@@ -207,7 +207,7 @@ function save_options()
 	},
 	{
 		"n": "subsStyl",
-		"s": "background-color: transparent;\ncolor: #ffff00;\nfont-size: 192%;\nfont-weight: bold;\ntext-shadow: 1px 4px black, 6px 2px black, -7px -1px black, 7px 4px black;\nfont-family: Segoe UI;"
+		"s": "background-color: transparent;\ncolor: #ffff00;\nfont-size: 192%;\nfont-weight: bold;\ntext-shadow: 0.02em 0.05em black,  0.06em 0.02em black,  -0.08em -0.01em black, 0.09em 0.05em black;\nfont-family: Segoe UI;"
 	},
 	{
 		"n": "videoCSS",
