@@ -49,47 +49,59 @@ function vttURL(t)
 	return window.URL.createObjectURL(textFileAsBlob);
 }
 
-function blacklistMatch(array, t)
-{
-	var notFound = false;
-	if ((array.length == 1 && array[0] == "") || (array.length == 0))
-	{
-		return false;
-	}
-	else
-	{
+function findIndexTotalInsens(string, substring, index) {
+    string = string.toLocaleLowerCase();
+    substring = substring.toLocaleLowerCase();
+    for (let i = 0; i < string.length ; i++) {
+        if ((string.includes(substring, i)) && (!(string.includes(substring, i + 1)))) {
+            index.push(i);
+            break;
+        }
+    }
+    return index;
+}
 
-		var track = null;
-		for (let i = 0; i < array.length; i++)
-		{
+function blacklistMatch(array, t) {
+    var found = false;
+    if (!((array.length == 1 && array[0] == "") || (array.length == 0))) {
+        ts = t.toLocaleLowerCase();
+        for (var i = 0; i < array.length; i++) {
+            let spl = array[i].split('*');
+            spl = removeEls("", spl);
 
-			let b = removeEls("", array[i].split('*'));
-			for (let k = 0; k < b.length; k++)
-			{
-				let pos = t.toLocaleLowerCase().indexOf(b[k].toLocaleLowerCase()); //full, then part
-				if (pos >= track)
-				{
-					track = pos;
-				}
-				else
-				{
-					if (i == array.length - 1 && k == b.length - 1 && track == null)
-					{
-						notFound = true;
-					}
-				}
-			}
+            var spl_mt = [];
+            for (let k = 0; k < spl.length; k++) {
+                var spl_m = [];
+                findIndexTotalInsens(ts, spl[k], spl_m);
 
-		}
-		if (notFound)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
+                spl_mt.push(spl_m);
+
+
+            }
+
+            found = true;
+
+            if ((spl_mt.length == 1) && (typeof spl_mt[0][0] === "undefined")) {
+                found = false;
+            } else if (!((spl_mt.length == 1) && (typeof spl_mt[0][0] !== "undefined"))) {
+
+                for (let m = 0; m < spl_mt.length - 1; m++) {
+
+                    if ((typeof spl_mt[m][0] === "undefined") || (typeof spl_mt[m + 1][0] === "undefined")) {
+                        found = false;
+                        m = spl_mt.length - 2; //EARLY TERMINATE
+                    } else if (!(spl_mt[m + 1][0] > spl_mt[m][0])) {
+                        found = false;
+                    }
+                }
+
+            }
+            i = (found) ? array.length - 1 : i;
+        }
+    }
+    //console.log(found);
+    return found;
+
 }
 
 function removeEls(d, array)
