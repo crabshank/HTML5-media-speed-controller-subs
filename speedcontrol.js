@@ -9,9 +9,27 @@ isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibilit
 
 var isol=0;
 
+function getSrc (vid){
+	if (vid.src !== "") {
+		return vid.src;
+	} else if (vid.currentSrc !== "") {
+		return vid.currentSrc;
+	}else{
+		return '';
+	}
+}
+
+function getMax(a,b){
+	 return ((b>a) ? b : a);
+}
+
 let defOpacity;
 var openSRT;
 let subti = {
+	dom: 0
+};
+
+let lnk = {
 	dom: 0
 };
 
@@ -560,7 +578,19 @@ button.vController-btn {
     margin-right: 2px;
 }
 
-	
+input[type="text"].vController-btn {
+    color: black;
+    background: white;
+    font-weight: bold;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 16px;
+    border: 1px solid white;
+    margin-bottom: 3px;
+    padding: 0px 0px 2px 1px;
+    margin-right: 2px;
+}
+
 span.speed-indicator{
     margin-right: 4px;
 }	
@@ -574,6 +604,10 @@ span.speed-indicator{
 		var plusButton = document.createElement('button');
 		var backButton = document.createElement('button');
 		var forwardButton = document.createElement('button');
+		var linkButton = document.createElement('button');
+			lnk.dom = document.createElement('input');
+			lnk.dom.type = 'text';
+			lnk.dom.style.display = 'none';
 		var subsButton = document.createElement('button');
 		var closeButton = document.createElement('button');
 		shadow.appendChild(bg);
@@ -583,6 +617,8 @@ span.speed-indicator{
 		bg.appendChild(minusButton);
 		bg.appendChild(plusButton);
 		bg.appendChild(forwardButton);
+		bg.appendChild(linkButton);
+		bg.appendChild(lnk.dom);
 		bg.appendChild(subsButton);
 		bg.appendChild(closeButton);
 		bg.classList.add('vController-bg');
@@ -597,11 +633,13 @@ span.speed-indicator{
 		plusButton.classList.add('vController-btn', 'increase');
 		forwardButton.textContent = '↷';
 		forwardButton.classList.add('vController-btn', 'forwards');
+		linkButton.textContent = '🔗';
+		linkButton.classList.add('vController-btn', 'link');
+		lnk.dom.classList.add('vController-btn', 'srcTxt');
 		subsButton.textContent = '_';
 		subsButton.classList.add('vController-btn', 'subs');
-
-		closeButton.classList.add('vController-btn', 'vController-close-button');
 		closeButton.textContent = '🗙';
+		closeButton.classList.add('vController-btn', 'vController-close-button');
 
 		this.videoEl_.parentElement.insertBefore(container, this.videoEl_);
 
@@ -616,6 +654,7 @@ span.speed-indicator{
 		this.minusButton_ = minusButton;
 		this.plusButton_ = plusButton;
 		this.forwardButton_ = forwardButton;
+		this.linkButton_ = linkButton;
 		this.subsButton_ = subsButton;
 		this.closeButton_ = closeButton;
 		defOpacity = this.el_.style.opacity;
@@ -721,6 +760,10 @@ span.speed-indicator{
 		{
 			self.speedIndicator_.textContent = self.rmng();
 		});
+		this.videoEl_.addEventListener('loadedmetadata', function()
+		{
+			self.speedIndicator_.textContent = self.rmng();
+		});
 		this.videoEl_.addEventListener('ratechange', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
@@ -781,7 +824,9 @@ span.speed-indicator{
 	var subButnStatus = null;
 	var thisSub;
 	var subsCSS;
-
+	
+	var lkButnStatus = 0;
+	
 	function subUpDwn(n)
 	{
 
@@ -1001,7 +1046,48 @@ span.speed-indicator{
 		}
 
 	}
+		
+	vController.vidControl.prototype.showLink = function(){		
+				switch (lkButnStatus)
+		{
 
+			case 0:
+				lnk.dom.ondblclick = function(){
+				lnk.dom.select();
+				};
+				lnk.dom.value = getSrc(this.videoEl_);
+				lnk.dom.readOnly = true;
+				lnk.dom.style.maxWidth=Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth)+'px';
+				this.linkButton_.parentNode.insertBefore(lnk.dom, this.linkButton_.nextSibling);
+
+				lnk.dom.style.width = lnk.dom.value.length + "ch";
+				lnk.dom.style.display = 'initial';
+
+				lnk.dom.select();
+				
+				lkButnStatus=1;
+			break;
+			case 1:
+				lnk.dom.style.display = 'none';
+				lkButnStatus=2;
+			break;
+			case 2:
+			let new_src=getSrc(this.videoEl_);
+				if(lnk.dom.value!=new_src){
+				lnk.dom.readOnly = false;
+				lnk.dom.value = new_src;
+				lnk.dom.readOnly = true;
+				}
+				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth))	+'px';
+				lnk.dom.style.width = lnk.dom.value.length + "ch";
+				lnk.dom.style.display = 'initial';
+				lnk.dom.select();
+				lkButnStatus=1;
+			break;
+		}
+		
+	}
+	
 	vController.vidControl.prototype.doSubs = function()
 	{
 		c_hide(this.el_, this.bgEl_, this.videoEl_);
@@ -1573,6 +1659,12 @@ span.speed-indicator{
 				e.stopPropagation();
 				this.goForwards();
 			}
+			else if (e.target === this.linkButton_)
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				this.showLink();
+			}
 			else if (e.target === this.subsButton_)
 			{
 				e.preventDefault();
@@ -1877,6 +1969,17 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.rmng = function()
 	{
+		if(lkButnStatus==1){
+			let new_src=getSrc(this.videoEl_);
+				if(lnk.dom.value!=new_src){
+				lnk.dom.readOnly = false;
+				lnk.dom.value = new_src;
+				lnk.dom.readOnly = true;
+				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth))	+'px';
+				lnk.dom.style.width = lnk.dom.value.length + "ch";
+				lnk.dom.select();
+				}
+		}
 		let speed = this.videoEl_.playbackRate;
 		if (speed!=0){
 		if(!isFinite(this.videoEl_.duration)){
@@ -1987,7 +2090,7 @@ span.speed-indicator{
 
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
-			if ((videoTag.src.length > 0)||(videoTag.currentSrc.length > 0)||(videoTag.readyState!=0))
+			if ((getSrc(videoTag)!='')||(videoTag.readyState!=0))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))
 				{
