@@ -1,105 +1,113 @@
-<html><head>
-		<title>Video Speed Control Options</title>
-		<style>
-			body
-			{
-			margin: 45px;
-			font-size: 20px;
-			}
-			.select-style{
-			font-size: 15px;
-			border: 1px solid #AAA;
-			background:#EEE;
-			width: 150px;
-			padding: 5px 8px;
-			}
-			button#save {
-    width: 116px;
-    color: #000000;
-    font-size: 19px;
-    background: #cccccc;
-    padding: 5px 10px 5px 10px;
-			}
-			
-			div#clrMtrx div {
-    width: 52px;
-    -webkit-appearance: textfield;
-    background-color: white;
-    -webkit-rtl-ordering: logical;
-    cursor: text;
-    padding: 1px;
-    border-width: 2px;
-    border-style: inset;
-    border-color: initial;
-    border-image: initial;
-    text-rendering: auto;
-    color: initial;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    -webkit-writing-mode: horizontal-tb !important;
-}
-div#clrMtrx {
-    max-width: 312px;
+<html>
+<head>
+<title>Video Speed Control Options</title>
+
+<style>
+body {
+	margin: 45px;
+	font-size: 20px;
 }
 
-div#videoCSS{
-       height: auto;
-    width: 160px;
-    -webkit-appearance: textfield;
-    padding: 1px;
-    border-width: 4px;
-    border-style: inset;
-    text-rendering: auto;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    -webkit-writing-mode: horizontal-tb !important;
+.select-style {
+	font-size: 15px;
+	border: 1px solid #AAA;
+	background: #EEE;
+	width: 150px;
+	padding: 5px 8px;
 }
-			div#subtitlesCSS,div#subtitlesCSS_two{
-       height: auto;
-    -webkit-appearance: textfield;
-    padding: 1px;
-    border-width: 4px;
-    border-style: inset;
-    text-rendering: auto;
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    -webkit-writing-mode: horizontal-tb !important;
-    width: 502px;
+
+button#save {
+	width: 116px;
+	color: #000000;
+	font-size: 19px;
+	background: #cccccc;
+	padding: 5px 10px 5px 10px;
 }
+
+div#clrMtrx div {
+	width: 52px;
+	-webkit-appearance: textfield;
+	background-color: white;
+	-webkit-rtl-ordering: logical;
+	cursor: text;
+	padding: 1px;
+	border-width: 2px;
+	border-style: inset;
+	border-color: initial;
+	border-image: initial;
+	text-rendering: auto;
+	color: initial;
+	letter-spacing: normal;
+	word-spacing: normal;
+	text-transform: none;
+	text-indent: 0px;
+	text-shadow: none;
+	display: inline-block;
+	text-align: start;
+	margin: 0em;
+	font: 400 13.3333px Arial;
+	-webkit-writing-mode: horizontal-tb !important;
+}
+
+div#clrMtrx {
+	max-width: 312px;
+}
+
+div#videoCSS {
+	height: auto;
+	width: 160px;
+	-webkit-appearance: textfield;
+	padding: 1px;
+	border-width: 4px;
+	border-style: inset;
+	text-rendering: auto;
+	letter-spacing: normal;
+	word-spacing: normal;
+	text-transform: none;
+	text-indent: 0px;
+	text-shadow: none;
+	display: inline-block;
+	text-align: start;
+	margin: 0em;
+	font: 400 13.3333px Arial;
+	-webkit-writing-mode: horizontal-tb !important;
+}
+
+div#subtitlesCSS,
+div#subtitlesCSS_two {
+	height: auto;
+	-webkit-appearance: textfield;
+	padding: 1px;
+	border-width: 4px;
+	border-style: inset;
+	text-rendering: auto;
+	letter-spacing: normal;
+	word-spacing: normal;
+	text-transform: none;
+	text-indent: 0px;
+	text-shadow: none;
+	display: inline-block;
+	text-align: start;
+	margin: 0em;
+	font: 400 13.3333px Arial;
+	-webkit-writing-mode: horizontal-tb !important;
+	width: 502px;
+}
+
 input[type="text"] {
-    max-width: 76px;
+	max-width: 76px;
 }
-		</style>
-	</head>
-	
-	<body>
-		<h1>HTML5 media speed controller options</h1>
-	Press buttons to record key presses or mouse scrolls to use as shortcuts. 
-	<br><br>
-	When recording shortcuts, modifiers may change displayed shortcut values. E.g. if "shift + ," is entered, it will be displayed as "shift + <".
-	<br><br>
-	Playback rate increment value: 
+
+</style>
+</head>
+
+<body>
+<h1>HTML5 media speed controller options</h1>
+Press buttons to record key presses or mouse scrolls to use as shortcuts. 
+<br><br>
+When recording shortcuts, modifiers may change displayed shortcut values. E.g. if "shift + ," is entered, it will be displayed as "shift + <".
+<br><br>
+Playback rate increment value: 
 <input id="pRIncrement" type="text" value="0.01">
 <br>
 

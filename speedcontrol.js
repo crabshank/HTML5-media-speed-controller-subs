@@ -745,7 +745,7 @@ span.speed-indicator{
 
 		document.body.addEventListener('dragend', dragHandler, true);
 		this.el_.setAttribute('draggable', true);
-
+		lnk.dom.value=getSrc(self.videoEl_);
 		this.speedIndicator_.textContent = this.rmng();
 		this.switchButton_.textContent = this.swtch();
 		this.videoEl_.addEventListener('canplay', function()
@@ -758,10 +758,12 @@ span.speed-indicator{
 		});
 		this.videoEl_.addEventListener('durationchange', function()
 		{
+			lnk.dom.value=getSrc(self.videoEl_);
 			self.speedIndicator_.textContent = self.rmng();
 		});
 		this.videoEl_.addEventListener('loadedmetadata', function()
 		{
+			lnk.dom.value=getSrc(self.videoEl_);
 			self.speedIndicator_.textContent = self.rmng();
 		});
 		this.videoEl_.addEventListener('ratechange', function()
@@ -1057,7 +1059,7 @@ span.speed-indicator{
 				};
 				lnk.dom.value = getSrc(this.videoEl_);
 				lnk.dom.readOnly = true;
-				lnk.dom.style.maxWidth=Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth)+'px';
+				lnk.dom.style.maxWidth=Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth)+'px';
 				this.linkButton_.parentNode.insertBefore(lnk.dom, this.linkButton_.nextSibling);
 
 				lnk.dom.style.width = lnk.dom.value.length + "ch";
@@ -1078,7 +1080,7 @@ span.speed-indicator{
 				lnk.dom.value = new_src;
 				lnk.dom.readOnly = true;
 				}
-				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth))	+'px';
+				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
 				lnk.dom.style.width = lnk.dom.value.length + "ch";
 				lnk.dom.style.display = 'initial';
 				lnk.dom.select();
@@ -1969,15 +1971,20 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.rmng = function()
 	{
-		if(lkButnStatus==1){
+
 			let new_src=getSrc(this.videoEl_);
 				if(lnk.dom.value!=new_src){
+				this.videoEl_.playbackRate=1;
+				if(lkButnStatus==1){
 				lnk.dom.readOnly = false;
 				lnk.dom.value = new_src;
 				lnk.dom.readOnly = true;
-				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-this.el_.clientWidth))	+'px';
+				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
 				lnk.dom.style.width = lnk.dom.value.length + "ch";
+				this.switchButton_.textContent = this.swtch();
 				lnk.dom.select();
+				}else{
+				this.switchButton_.textContent = this.swtch();
 				}
 		}
 		let speed = this.videoEl_.playbackRate;
