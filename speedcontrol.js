@@ -1632,7 +1632,6 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.handleFocus_ = function(e)
 	{		
-			fc_hv.bar_hv=true;
 			if (e.target === lnk.dom)
 			{
 			fc_hv.lnk_fc=true;
