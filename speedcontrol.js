@@ -33,6 +33,15 @@ let lnk = {
 	dom: 0
 };
 
+
+var fc_hv = {
+	lnk_hv: false,
+	lnk_fc: false,
+	subti_hv: false,
+	subti_fc: false,
+	bar_hv: false
+};
+
 let s = {
 	track: 0,
 	origTrack: 0,
@@ -678,16 +687,17 @@ span.speed-indicator{
 				c.style.display = 'initial';
 				c.style.visibility = 'initial';
 
-				if ((hvrChk() == false) && (permashow !== 1))
-				{
-					disap = setTimeout(hideCtl, t);
-				}
+				disap = setTimeout(hideCtl, t);
+
 
 				function hideCtl()
+				{
+				if ((hvrChk() == false) && (permashow !== 1))
 				{
 					c.style.display = 'none';
 					c.style.visibility = 'hidden';
 					hideMulti = 0;
+				}
 				}
 			}
 			
@@ -707,7 +717,7 @@ span.speed-indicator{
 		function hvrChk()
 		{
 
-			if ((c.matches(':hover')) || ((d.children.subti !== undefined) && (d.children.subti.matches(':focus'))))
+			if ((fc_hv.bar_hv) || (fc_hv.lnk_hv) || (fc_hv.lnk_fc) || (fc_hv.subti_fc) || (fc_hv.subti_hv))
 			{
 
 				return true;
@@ -720,12 +730,7 @@ span.speed-indicator{
 
 		showHide();
 
-		v.onmousemove = function()
-		{
-
-			showHide();
-
-		}
+		v.addEventListener('mousemove', showHide,true);
 
 	}
 
@@ -736,8 +741,20 @@ span.speed-indicator{
 		var wheelHandler = this.handleWheel_.bind(this);
 		//var dblClickHandler = this.handleDblClick_.bind(this);
 		var keydownHandler = this.handleKeyDown_.bind(this);
+		var mouseOverHandler = this.handleMouseOver_.bind(this);
+		var mouseOutHandler = this.handleMouseOut_.bind(this);
+		var mouseOverHandlerBg = this.handleMouseOverBg_.bind(this);
+		var mouseOutHandlerBg = this.handleMouseOutBg_.bind(this);
+		var focusHandler = this.handleFocus_.bind(this);
+		var focusOutHandler = this.handleFocusOut_.bind(this);
 
 		var dragHandler = this.handleDragEndEvent_.bind(this);
+		this.el_.addEventListener('mouseover', mouseOverHandler, true);
+		this.el_.addEventListener('mouseout', mouseOutHandler, true);
+		this.bgEl_.addEventListener('mouseover', mouseOverHandlerBg, true);
+		this.bgEl_.addEventListener('mouseout', mouseOutHandlerBg, true);
+		this.bgEl_.addEventListener('focus', focusHandler, true);
+		this.bgEl_.addEventListener('focusout', focusOutHandler, true);
 		this.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
 		// this.bgEl_.addEventListener('dblclick', dblClickHandler, true);
 		this.bgEl_.addEventListener('wheel', wheelHandler, true);
@@ -1613,6 +1630,70 @@ span.speed-indicator{
 		}
 	};
 
+	vController.vidControl.prototype.handleFocus_ = function(e)
+	{		
+			fc_hv.bar_hv=true;
+			if (e.target === lnk.dom)
+			{
+			fc_hv.lnk_fc=true;
+			}
+			if (e.target === subti.dom)
+			{
+			fc_hv.subti_fc=true;
+			}
+
+	};
+
+	vController.vidControl.prototype.handleFocusOut_ = function(e)
+	{
+			if (e.target === lnk.dom)
+			{
+			fc_hv.lnk_fc=false;
+			}
+			if (e.target === subti.dom)
+			{
+			fc_hv.subti_fc=false;
+			}
+
+	};
+	
+	vController.vidControl.prototype.handleMouseOver_ = function(e)
+	{
+			fc_hv.bar_hv=true;
+	};	
+	
+	vController.vidControl.prototype.handleMouseOut_ = function(e)
+	{
+			fc_hv.lnk_hv=false;
+			fc_hv.subti_hv=false;
+			fc_hv.bar_hv=false;
+	};
+
+	vController.vidControl.prototype.handleMouseOverBg_ = function(e)
+	{
+			fc_hv.bar_hv=true;
+			if (e.target === lnk.dom)
+			{
+			fc_hv.lnk_hv=true;
+			}
+			if (e.target === subti.dom)
+			{
+			fc_hv.subti_hv=true;
+			}
+	};	
+	
+	vController.vidControl.prototype.handleMouseOutBg_ = function(e)
+	{
+			if (e.target === lnk.dom)
+			{
+			fc_hv.lnk_hv=false;
+			}
+			if (e.target === subti.dom)
+			{
+			fc_hv.subti_hv=false;
+			}
+	};
+
 	vController.vidControl.prototype.handleMouseDown_ = function(e)
 	{
 		if (e.path[0].tagName == 'INPUT' ||
@@ -1679,6 +1760,11 @@ span.speed-indicator{
 				e.stopPropagation();
 				permashow = 1;
 				permahide = 0;
+				fc_hv.lnk_hv=false;
+				fc_hv.lnk_fc=false;
+				fc_hv.subti_hv=false;
+				fc_hv.subti_fc=false;
+				fc_hv.bar_hv=false;
 				this.showHide();
 			}
 			else
