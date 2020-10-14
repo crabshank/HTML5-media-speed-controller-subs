@@ -692,7 +692,7 @@ span.speed-indicator{
 
 				function hideCtl()
 				{
-				if ((hvrChk() == false) && (permashow !== 1))
+				if ((permashow !== 1) && (hvrChk() == false))
 				{
 					c.style.display = 'none';
 					c.style.visibility = 'hidden';
