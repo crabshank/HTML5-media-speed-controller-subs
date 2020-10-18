@@ -35,9 +35,7 @@ let lnk = {
 
 
 var fc_hv = {
-	lnk_hv: false,
 	lnk_fc: false,
-	subti_hv: false,
 	subti_fc: false,
 	bar_hv: false
 };
@@ -717,7 +715,7 @@ span.speed-indicator{
 		function hvrChk()
 		{
 
-			if ((fc_hv.bar_hv) || (fc_hv.lnk_hv) || (fc_hv.lnk_fc) || (fc_hv.subti_fc) || (fc_hv.subti_hv))
+			if ((fc_hv.bar_hv) || (fc_hv.lnk_fc) || (fc_hv.subti_fc))
 			{
 
 				return true;
@@ -743,16 +741,12 @@ span.speed-indicator{
 		var keydownHandler = this.handleKeyDown_.bind(this);
 		var mouseOverHandler = this.handleMouseOver_.bind(this);
 		var mouseOutHandler = this.handleMouseOut_.bind(this);
-		var mouseOverHandlerBg = this.handleMouseOverBg_.bind(this);
-		var mouseOutHandlerBg = this.handleMouseOutBg_.bind(this);
 		var focusHandler = this.handleFocus_.bind(this);
 		var focusOutHandler = this.handleFocusOut_.bind(this);
 
 		var dragHandler = this.handleDragEndEvent_.bind(this);
 		this.el_.addEventListener('mouseover', mouseOverHandler, true);
 		this.el_.addEventListener('mouseout', mouseOutHandler, true);
-		this.bgEl_.addEventListener('mouseover', mouseOverHandlerBg, true);
-		this.bgEl_.addEventListener('mouseout', mouseOutHandlerBg, true);
 		this.bgEl_.addEventListener('focus', focusHandler, true);
 		this.bgEl_.addEventListener('focusout', focusOutHandler, true);
 		this.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
@@ -976,16 +970,14 @@ span.speed-indicator{
 	var end_tags=[];
 	for (var i=0; i<spr.length; i++){
 	
-	var out_line='<';
+	var out_line;
 	var start_pos=-1;
 
 	if ((spr[i]=='<')&&(i<spr.length-1)){
-	
+		out_line='<';
 		for (var k=i+1; k<spr.length; k++){
 		start_pos=i;
 		if (spr[k]=='<'){
-		//out_line='';
-		//start_pos=-1;
 		k=spr.length-1;
 		}else if (spr[k]=='>'){
 		out_line+='>';
@@ -999,10 +991,27 @@ span.speed-indicator{
 		
 		}
 	
-	}
+	}else if ((spr[i]=='>')&&(i>spr.length-1)){
+		out_line='>';
+		for (var k=i+1; k>spr.length; k++){
+		start_pos=i;
+		if (spr[k]=='>'){
+		k=spr.length-1;
+		}else if (spr[k]=='<'){
+		out_line+='<';
+		out_tags.push(out_line);
+		start_tags.push(parseInt(start_pos));
+		end_tags.push(parseInt(k));
+		k=spr.length-1;
+		}else{
+		out_line+=spr[k];
+		}
+		
+		}
 	
 	}
 	
+	}
 	return [out_tags,start_tags,end_tags];
 	}
 
@@ -1146,7 +1155,7 @@ span.speed-indicator{
 		function srtVttTiming(srt)
 		{
 
-			var tm = srt.match(/\d+\n{1}\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}/g);
+			var tm = srt.match(/\d+\n{1}\d{2,}:\d{2}:\d{2},\d{3} --> \d{2,}:\d{2}:\d{2},\d{3}/g);
 			var nTm = [];
 			for (let i = 0; i < tm.length; i++)
 			{
@@ -1663,37 +1672,11 @@ span.speed-indicator{
 	
 	vController.vidControl.prototype.handleMouseOut_ = function(e)
 	{
-			fc_hv.lnk_hv=false;
-			fc_hv.subti_hv=false;
 			fc_hv.bar_hv=false;
+			fc_hv.lnk_fc=false;
 	};
 
-	vController.vidControl.prototype.handleMouseOverBg_ = function(e)
-	{
-			fc_hv.bar_hv=true;
-			if (e.target === lnk.dom)
-			{
-			fc_hv.lnk_hv=true;
-			}
-			if (e.target === subti.dom)
-			{
-			fc_hv.subti_hv=true;
-			}
-	};	
-	
-	vController.vidControl.prototype.handleMouseOutBg_ = function(e)
-	{
-			if (e.target === lnk.dom)
-			{
-			fc_hv.lnk_hv=false;
-			}
-			if (e.target === subti.dom)
-			{
-			fc_hv.subti_hv=false;
-			}
-	};
-
-	vController.vidControl.prototype.handleMouseDown_ = function(e)
+		vController.vidControl.prototype.handleMouseDown_ = function(e)
 	{
 		if (e.path[0].tagName == 'INPUT' ||
 			e.path[0].tagName == 'TEXTAREA' ||
@@ -1759,9 +1742,7 @@ span.speed-indicator{
 				e.stopPropagation();
 				permashow = 1;
 				permahide = 0;
-				fc_hv.lnk_hv=false;
 				fc_hv.lnk_fc=false;
-				fc_hv.subti_hv=false;
 				fc_hv.subti_fc=false;
 				fc_hv.bar_hv=false;
 				this.showHide();
