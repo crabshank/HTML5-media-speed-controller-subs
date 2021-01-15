@@ -240,7 +240,7 @@ function save_options()
 	},
 	{
 		"n": "selFont",
-		"s": 264
+		"s": 0
 	},
 	{
 		"n": "subsStyl",
@@ -596,6 +596,10 @@ input[type="text"].vController-btn {
     margin-bottom: 3px;
     padding: 0px 0px 2px 1px;
     margin-right: 2px;
+}
+
+input[type="file" i]::-webkit-file-upload-button {
+    background-color: buttonface;
 }
 
 span.speed-indicator{

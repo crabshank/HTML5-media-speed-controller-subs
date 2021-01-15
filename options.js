@@ -293,6 +293,7 @@ function restore_options()
 
 	chrome.storage.sync.get(null, function(items)
 	{
+		if(v_selFont.length>0){
 		if (Object.keys(items).length !== 0)
 		{
 			console.log(items);
@@ -323,10 +324,17 @@ function restore_options()
 			}
 
 			document.getElementById(sets[6].n).value = sets[6].s;
-			v_selFont.value = sets[8].s.split(' font-family: ')[1].split(';')[0];
-			v_subtitlesCSS.innerHTML = '';
+			let fnt = sets[8].s.split('font-family:')[1].trim().split(';')[0];
+			v_selFont.selectedIndex=sets[7];
+			for(let k=0; k<v_selFont.length; k++){
+				if(v_selFont[k].value==fnt){
+					v_selFont.selectedIndex=k;
+					break;
+				}
+			}
 			v_subtitlesCSS.innerText = sets[8].s.split(' font-family: ')[0];
-			document.getElementById('testSub').style.cssText = sets[8].s + ' ' + " transform: translate(0%, 0%)" + sets[15].s.replace(/translate(.|\n)+?\)/g, "").replace(/transform(.|\n)*:/g, "").replace(/(\n| )/g, "") + " text-align: center;";
+			document.getElementById('testSub').style.cssText = sets[8].s + ' ' + " transform: translate(0%, 0%)" + sets[15].s.replace(/translate(.|\n)+?\)/g, "").replace(/transform(.|\n)*:/g, "").replace(/(\n| )/g, "") + " text-align: center; width: -webkit-fill-available; padding-left: 0px;";
+			document.getElementById('testSub').style.setProperty("font-family", v_selFont.value);
 			document.getElementById(sets[9].n).innerText = sets[9].s;
 			document.getElementById(sets[10].n).checked = sets[10].s;
 			document.getElementById(sets[11].n).value = sets[11].s;
@@ -342,6 +350,9 @@ function restore_options()
 			save_options();
 			restore_options();
 		}
+	}else{
+		restore_options();
+	}
 	});
 
 }
@@ -670,7 +681,7 @@ function finaliseSc()
 
 function testSb()
 {
-	egSub.style.cssText = v_subtitlesCSS.innerText + ' ' + " transform: translate(0%, 0%) " + v_subtitlesCSS_two.innerText.replace(/translate(.|\n)+?\)/g, "").replace(/transform(.|\n)*:/g, "").replace(/(\n| )/g, "") + " text-align: center;";
+	egSub.style.cssText = v_subtitlesCSS.innerText + ' ' + " transform: translate(0%, 0%) " + v_subtitlesCSS_two.innerText.replace(/translate(.|\n)+?\)/g, "").replace(/transform(.|\n)*:/g, "").replace(/(\n| )/g, "") + " text-align: center; width: -webkit-fill-available; padding-left: 0px;";
 	egSub.style.fontFamily = v_selFont.value;
 
 }
@@ -854,7 +865,7 @@ function save_options()
 		},
 		{
 			n: v_selFont.id,
-			s: v_selFont.selectedIndex
+			s: 0
 		},
 		{
 			n: "subsStyl",
@@ -893,7 +904,7 @@ function save_options()
 
 		for (let i = 0; i <= 13; i++)
 		{
-			console.log(objs[i]);
+			//console.log(objs[i]);
 			if (objs[i].o == null)
 			{
 				objs[i].o = def_objs[i];

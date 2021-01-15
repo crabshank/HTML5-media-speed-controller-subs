@@ -16,11 +16,15 @@ body {
 	padding: 5px 8px;
 }
 
+button {
+	background: buttonface;
+}
+
 button#save {
 	width: 116px;
 	color: #000000;
 	font-size: 19px;
-	background: #cccccc;
+	background-color: buttonface;
 	padding: 5px 10px 5px 10px;
 }
 
@@ -51,6 +55,14 @@ div#clrMtrx div {
 
 div#clrMtrx {
 	max-width: 312px;
+}
+
+textarea#blacklist {
+    border: #00000069;
+    border-style: outset;
+    border-width: 1px;
+	width: -webkit-fill-available;
+	min-height: 3.1ch;
 }
 
 div#videoCSS {
@@ -98,6 +110,13 @@ input[type="text"] {
 	max-width: 76px;
 }
 
+input[type="file" i]::-webkit-file-upload-button {
+    background-color: buttonface;
+}
+
+select#selFont {
+    background-color: buttonface;
+}
 </style>
 </head>
 
@@ -241,7 +260,7 @@ Current style:
 		<br>
 				<span>Blacklisted Sites (enter domain names separated by commas; use asterisks with slashes):</span>
 		<br>
-		<textarea id="blacklist"></textarea>
+		<textarea id="blacklist"></textarea><br><br>
 		<div id="status"></div>
 				<button id="save" >Save</button>
 
