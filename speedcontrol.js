@@ -1433,55 +1433,91 @@ span.speed-indicator{
 						case 49:
 						case 97:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(11);	
+							}else{
 							this.setSpeed(1);
+							}
 							break;
 
 						case 50:
 						case 98:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(12);	
+							}else{
 							this.setSpeed(2);
+							}
 							break;
 
 						case 51:
 						case 99:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(13);	
+							}else{
 							this.setSpeed(3);
+							}
 							break;
 
 						case 52:
 						case 100:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(14);	
+							}else{
 							this.setSpeed(4);
+							}
 							break;
 
 						case 53:
 						case 101:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(15);	
+							}else{
 							this.setSpeed(5);
+							}
 							break;
 
 						case 54:
 						case 102:
 						e.stopPropagation();
+							if(e.shiftKey){
+							this.setSpeed(16);	
+							}else{
 							this.setSpeed(6);
+							}
 							break;
 
 						case 55:
 						case 103:
 						e.stopPropagation();
+							if(!e.shiftKey){
 							this.setSpeed(7);
+							}
 							break;
 
 						case 56:
 						case 104:
 						e.stopPropagation();
+							if(!e.shiftKey){
 							this.setSpeed(8);
+							}
 							break;
 
 						case 57:
 						case 105:
 						e.stopPropagation();
+							if(!e.shiftKey){
 							this.setSpeed(9);
+							}
+							break;
+
+						case 48:
+						case 96:
+						e.stopPropagation();
+							this.setSpeed(10);
 							break;
 
 					}
