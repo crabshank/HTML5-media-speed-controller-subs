@@ -9,7 +9,7 @@ isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibilit
 
 var isol=0;
 
-function getSrc (vid){
+function getSrc(vid){
 	if (vid.src !== "") {
 		return vid.src;
 	} else if (vid.currentSrc !== "") {
@@ -18,6 +18,15 @@ function getSrc (vid){
 		return '';
 	}
 }
+
+function eligVid(vid){
+if((getSrc(vid)!='') && (vid.readyState != 0)){
+	return true;
+}else{
+	return false;
+}
+}
+
 
 function getMax(a,b){
 	 return ((b>a) ? b : a);
@@ -688,7 +697,8 @@ span.speed-indicator{
 				
 				c.style.display = 'initial';
 				c.style.visibility = 'initial';
-
+				c.style.opacity = '';
+				
 				disap = setTimeout(hideCtl, t);
 
 
@@ -696,8 +706,9 @@ span.speed-indicator{
 				{
 				if ((permashow !== 1) && (hvrChk() == false))
 				{
-					c.style.display = 'none';
-					c.style.visibility = 'hidden';
+					//c.style.display = 'none';
+					//c.style.visibility = 'hidden';
+					c.style.opacity = '0';
 					hideMulti = 0;
 				}
 				}
@@ -1708,12 +1719,14 @@ span.speed-indicator{
 	vController.vidControl.prototype.handleMouseOver_ = function(e)
 	{
 			fc_hv.bar_hv=true;
+			c_hide(this.el_, this.bgEl_, this.videoEl_);
 	};	
 	
 	vController.vidControl.prototype.handleMouseOut_ = function(e)
 	{
 			fc_hv.bar_hv=false;
 			fc_hv.lnk_fc=false;
+			c_hide(this.el_, this.bgEl_, this.videoEl_);
 	};
 
 		vController.vidControl.prototype.handleMouseDown_ = function(e)
@@ -2203,7 +2216,7 @@ span.speed-indicator{
 
 		Array.prototype.forEach.call(videoTags, function(videoTag)
 		{
-			if ((getSrc(videoTag)!='')||(videoTag.readyState!=0))
+			if (eligVid(videoTag))
 			{
 				if (!videoTag.getAttribute('vController-video-control'))
 				{
