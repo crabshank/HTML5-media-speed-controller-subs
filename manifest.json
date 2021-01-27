@@ -6,7 +6,7 @@
 	"page": "options.html"
 	},     
 	"manifest_version": 2,
-	"version": "1.5",
+	"version": "1.50",
 	"content_scripts": [
 	{
 	  "matches": ["<all_urls>"],
