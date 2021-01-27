@@ -5,9 +5,26 @@ var bdy=[...document.getElementsByTagName("body")][0];
 
 var isolator=document.createElement('style');
 
-isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;};";
+var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;};";
 
-var isol=0;
+function elRemover(el){
+	if(typeof el!=='undefined' && !!el){
+	if(typeof el.parentNode!=='undefined' && !!el.parentNode){
+		el.parentNode.removeChild(el);
+	}
+	}
+}
+
+function ifAnyOf(el,arr){
+	let out=false
+	for(let i=0; i<arr.length; i++){
+		if(el===arr[i]){
+			out=true;
+			break;
+		}
+	}
+	return out;
+}
 
 function getSrc(vid){
 	if (vid.src !== "") {
@@ -31,48 +48,6 @@ if((getSrc(vid)!='') && (vid.readyState != 0)){
 function getMax(a,b){
 	 return ((b>a) ? b : a);
 }
-
-let defOpacity;
-var openSRT;
-let subti = {
-	dom: 0
-};
-
-let lnk = {
-	dom: 0
-};
-
-
-var fc_hv = {
-	lnk_fc: false,
-	subti_fc: false,
-	bar_hv: false
-};
-
-let s = {
-	track: 0,
-	origTrack: 0,
-	vtt: 0,
-	d: 0,
-	delIndicator: 0,
-	blcd: 0
-};
-
-var tmpScObj = {
-	id: null,
-	ctrl: null,
-	alt: null,
-	shift: null,
-	code: null,
-	dispKey: null,
-	wheelDeltaX: null,
-	wheelDeltaY: null
-};
-
-var scCompareS = [];
-var scCompareE = [];
-
-s.vtt = "WEBVTT\n\n00:00:00.000 --> 9999:59:59.999\n";
 
 function vttURL(t)
 {
@@ -151,8 +126,7 @@ function removeEls(d, array)
 	return newArray;
 }
 
-var permashow = 0;
-var permahide = 0;
+
 
 var sets = [];
 var objs = [];
@@ -625,9 +599,6 @@ span.speed-indicator{
 		var backButton = document.createElement('button');
 		var forwardButton = document.createElement('button');
 		var linkButton = document.createElement('button');
-			lnk.dom = document.createElement('input');
-			lnk.dom.type = 'text';
-			lnk.dom.style.display = 'none';
 		var subsButton = document.createElement('button');
 		var closeButton = document.createElement('button');
 		shadow.appendChild(bg);
@@ -638,7 +609,14 @@ span.speed-indicator{
 		bg.appendChild(plusButton);
 		bg.appendChild(forwardButton);
 		bg.appendChild(linkButton);
-		bg.appendChild(lnk.dom);
+		
+		this.lnk_ = {dom: 0};
+		this.lnk_.dom = document.createElement('input');
+		this.lnk_.dom.type = 'text';
+		this.lnk_.dom.style.display = 'none';
+		this.lnk_.dom.style.marginLeft="1px";
+		
+		bg.appendChild(this.lnk_.dom);
 		bg.appendChild(subsButton);
 		bg.appendChild(closeButton);
 		bg.classList.add('vController-bg');
@@ -655,7 +633,7 @@ span.speed-indicator{
 		forwardButton.classList.add('vController-btn', 'forwards');
 		linkButton.textContent = '🔗';
 		linkButton.classList.add('vController-btn', 'link');
-		lnk.dom.classList.add('vController-btn', 'srcTxt');
+		this.lnk_.dom.classList.add('vController-btn', 'srcTxt');
 		subsButton.textContent = '_';
 		subsButton.classList.add('vController-btn', 'subs');
 		closeButton.textContent = '🗙';
@@ -677,23 +655,46 @@ span.speed-indicator{
 		this.linkButton_ = linkButton;
 		this.subsButton_ = subsButton;
 		this.closeButton_ = closeButton;
-		defOpacity = this.el_.style.opacity;
+		this.barButtonsArr_=[this.switchButton_,this.backButton_, this.minusButton_, this.plusButton_,this.forwardButton_,this.linkButton_,this.subsButton_,this.closeButton_];
+		this.isol_=0;
+		//this.defOpacity_ = this.el_.style.opacity;
+		this.openSRT_={};
+		this.subti_ = {dom: 0};
+		this.fc_hv_={lnk_fc: false,	subti_fc: false, bar_hv: false};
+		this.s_ = {track: 0, origTrack: 0, vtt: "WEBVTT\n\n00:00:00.000 --> 9999:59:59.999\n", d: 0, delIndicator: 0, blcd: 0};
+		this.permashow_=0;
+		this.permahide_=0;
+		this.tmpScObj_={
+						id: null,
+						ctrl: null,
+						alt: null,
+						shift: null,
+						code: null,
+						dispKey: null,
+						wheelDeltaX: null,
+						wheelDeltaY: null
+						};
+		this.scCompareS_=[];
+		this.scCompareE_=[];
+		this.subButnStatus_=null;
+		this.hideMulti_ = 0;
+		this.lkButnStatus_ = 0;
+		
 	};
 
-	var hideMulti = 0;
 	var disap;
 
-	function c_hide(c, d, v)
+	function c_hide(c, d, v, self)
 	{
 		function showHide()
 		{
 			
-		  v.controls=(isol==1)?true:v.controls;
+		  v.controls=(self.isol_==1)?true:v.controls;
 		  
 			function shwHde(t)
 			{
 				
-				hideMulti++;
+				self.hideMulti_++;
 				
 				c.style.display = 'initial';
 				c.style.visibility = 'initial';
@@ -704,18 +705,18 @@ span.speed-indicator{
 
 				function hideCtl()
 				{
-				if ((permashow !== 1) && (hvrChk() == false))
+				if ((self.permashow_ !== 1) && (hvrChk(self) == false))
 				{
 					//c.style.display = 'none';
 					//c.style.visibility = 'hidden';
 					c.style.opacity = '0';
-					hideMulti = 0;
+					self.hideMulti_ = 0;
 				}
 				}
 			}
 			
-			if ((permashow!=1)&&(permahide!=1)){
-				if (hideMulti == 0)
+			if ((self.permashow_!=1)&&(self.permahide_!=1)){
+				if (self.hideMulti_ == 0)
 				{
 					shwHde(3000);
 				}
@@ -727,10 +728,10 @@ span.speed-indicator{
 			}
 		}
 
-		function hvrChk()
+		function hvrChk(self)
 		{
 
-			if ((fc_hv.bar_hv) || (fc_hv.lnk_fc) || (fc_hv.subti_fc))
+			if ((self.fc_hv_.bar_hv) || (self.fc_hv_.lnk_fc) || (self.fc_hv_.subti_fc))
 			{
 
 				return true;
@@ -750,110 +751,111 @@ span.speed-indicator{
 	vController.vidControl.prototype.enterDocument = function()
 	{
 		const self = this;
-		var mouseDownHandler = this.handleMouseDown_.bind(this);
-		var wheelHandler = this.handleWheel_.bind(this);
-		//var dblClickHandler = this.handleDblClick_.bind(this);
-		var keydownHandler = this.handleKeyDown_.bind(this);
-		var mouseOverHandler = this.handleMouseOver_.bind(this);
-		var mouseOutHandler = this.handleMouseOut_.bind(this);
-		var focusHandler = this.handleFocus_.bind(this);
-		var focusOutHandler = this.handleFocusOut_.bind(this);
-
-		var dragHandler = this.handleDragEndEvent_.bind(this);
-		this.el_.addEventListener('mouseover', mouseOverHandler, true);
-		this.el_.addEventListener('mouseout', mouseOutHandler, true);
-		this.bgEl_.addEventListener('focus', focusHandler, true);
-		this.bgEl_.addEventListener('focusout', focusOutHandler, true);
-		this.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
-		// this.bgEl_.addEventListener('dblclick', dblClickHandler, true);
-		this.bgEl_.addEventListener('wheel', wheelHandler, true);
+				var mouseDownHandler = self.handleMouseDown_.bind(self);
+		var wheelHandler = self.handleWheel_.bind(self);
+		var dblClickHandler = self.handleDblClick_.bind(self);
+		var clickHandler = self.handleClick_.bind(self);
+		var keydownHandler = self.handleKeyDown_.bind(self);
+		var mouseOverHandler = self.handleMouseOver_.bind(self);
+		var mouseOutHandler = self.handleMouseOut_.bind(self);
+		var focusHandler = self.handleFocus_.bind(self);
+		var focusOutHandler = self.handleFocusOut_.bind(self);
+		var dragHandler = self.handleDragEndEvent_.bind(self);
+		
+		self.el_.addEventListener('mouseover', mouseOverHandler, true);
+		self.el_.addEventListener('mouseout', mouseOutHandler, true);
+		self.bgEl_.addEventListener('focus', focusHandler, true);
+		self.bgEl_.addEventListener('focusout', focusOutHandler, true);
+		self.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
+		self.bgEl_.addEventListener('dblclick', dblClickHandler, true);
+		self.bgEl_.addEventListener('click', clickHandler, true);
+		self.bgEl_.addEventListener('wheel', wheelHandler, true);
+		
 		document.body.addEventListener('keydown', keydownHandler, true);
-
 		document.body.addEventListener('dragend', dragHandler, true);
-		this.el_.setAttribute('draggable', true);
-		lnk.dom.value=getSrc(self.videoEl_);
-		this.speedIndicator_.textContent = this.rmng();
-		this.switchButton_.textContent = this.swtch();
-		this.videoEl_.addEventListener('canplay', function()
+		
+		self.el_.setAttribute('draggable', true);
+		self.lnk_.dom.value=getSrc(self.videoEl_);
+		self.speedIndicator_.textContent = self.rmng();
+		self.switchButton_.textContent = self.swtch();
+		self.videoEl_.addEventListener('canplay', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
 		});
-		this.videoEl_.addEventListener('progress', function()
+		self.videoEl_.addEventListener('progress', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
 		});
-		this.videoEl_.addEventListener('durationchange', function()
+		self.videoEl_.addEventListener('durationchange', function()
 		{
-			lnk.dom.value=getSrc(self.videoEl_);
+			self.lnk_.dom.value=getSrc(self.videoEl_);
 			self.speedIndicator_.textContent = self.rmng();
 		});
-		this.videoEl_.addEventListener('loadedmetadata', function()
+		self.videoEl_.addEventListener('loadedmetadata', function()
 		{
-			lnk.dom.value=getSrc(self.videoEl_);
+			self.lnk_.dom.value=getSrc(self.videoEl_);
 			self.speedIndicator_.textContent = self.rmng();
 		});
-		this.videoEl_.addEventListener('ratechange', function()
+		self.videoEl_.addEventListener('ratechange', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
 			self.switchButton_.textContent = self.swtch();
 		});
-		this.videoEl_.addEventListener('timeupdate', function()
+		self.videoEl_.addEventListener('timeupdate', function()
 		{
 			self.speedIndicator_.textContent = self.rmng();
-			if (s.track !== 0)
+			if (self.s_.track !== 0)
 			{
-				if (s.track.track.mode == "showing")
+				if (self.s_.track.track.mode == "showing")
 				{
 					self.subsButton_.style.backgroundColor = "#36ff07";
-					subButnStatus = 1;
+					self.subButnStatus_ = 1;
 				}
 
-				if (s.track.track.mode == "hidden")
+				if (self.s_.track.track.mode == "hidden")
 				{
 					self.subsButton_.style.backgroundColor = "#ff57ff";
-					subButnStatus = 3;
+					self.subButnStatus_ = 3;
 				}
-				if (s.track.track.mode == "disabled")
+				if (self.s_.track.track.mode == "disabled")
 				{
 					self.subsButton_.style.backgroundColor = "#c00000";
-					subButnStatus = 3;
+					self.subButnStatus_ = 3;
 				}
 			}
 		});
 		
 		hed.insertAdjacentElement('afterbegin',isolator);
-		this.videoEl_.addEventListener('mouseenter', c_hide(this.el_, this.bgEl_, this.videoEl_), true);
+		self.videoEl_.addEventListener('mouseenter', c_hide(self.el_, self.bgEl_, self.videoEl_, self), true);
 	};
 
 	vController.vidControl.prototype.goBack = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.currentTime -= sIncrement;
 	};
 
 	vController.vidControl.prototype.decreaseSpeed = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.playbackRate -= pRIncrement;
 	};
 
 	vController.vidControl.prototype.increaseSpeed = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.playbackRate += pRIncrement;
 	};
 
 	vController.vidControl.prototype.goForwards = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.currentTime += sIncrement;
 	};
 
-	var subButnStatus = null;
 	var thisSub;
 	var subsCSS;
 	
-	var lkButnStatus = 0;
 	
 	function subUpDwn(n)
 	{
@@ -876,12 +878,12 @@ span.speed-indicator{
 		
 	}
 
-	function subsDelay(track, origTrack, d, v, elm, bgElm)
+	function subsDelay(track, origTrack, d, v, elm, bgElm, self)
 	{
 
 		function do_del()
 		{
-			c_hide(elm, bgElm, v);
+			c_hide(elm, bgElm, v, self);
 
 			track.mode = "hidden";
 
@@ -959,22 +961,23 @@ span.speed-indicator{
 			}
 
 			track.mode = "showing";
-			s.delIndicator.textContent = d + ' ms';
+			self.s_.delIndicator.textContent = d + ' ms';
 
 		}
+		
+		if(self.s_.origTrack!=0){
+			if (!v.paused)
+			{
+				v.pause();
+				do_del();
+				v.play();
+			}
+			else
+			{
 
-		if (!v.paused)
-		{
-			v.pause();
-			do_del();
-			v.play();
+				do_del();
+			}
 		}
-		else
-		{
-
-			do_del();
-		}
-
 	}
 
 	function get_tags (spr)
@@ -1030,14 +1033,16 @@ span.speed-indicator{
 	return [out_tags,start_tags,end_tags];
 	}
 
-	function balanceSubs()
+	function balanceSubs(self)
 	{
-		if (s.blcd !== 1)
+		if(self.s_.track != 0)
 		{
-			s.track.track.mode = "hidden";
-			for (let i = 0; i < s.track.track.cues.length; i++)
+		if (self.s_.blcd !== 1)
+		{
+			self.s_.track.track.mode = "hidden";
+			for (let i = 0; i < self.s_.track.track.cues.length; i++)
 			{
-				var subtitleCurr = s.track.track.cues[i].text.split('\n');
+				var subtitleCurr = self.s_.track.track.cues[i].text.split('\n');
 				for (let k=0; k<subtitleCurr.length;k++){
 					var spread=[...subtitleCurr[k]];
 					var line_tags=get_tags(spread); 
@@ -1081,51 +1086,48 @@ span.speed-indicator{
 					}
 					tmpBalDiv.remove();
 				}
-				s.track.track.cues[i].text = subtitleCurr.join('\n');
+				self.s_.track.track.cues[i].text = subtitleCurr.join('\n');
 			}
-			s.track.track.mode = "showing";
-			s.blcd = 1;
+			self.s_.track.track.mode = "showing";
+			self.s_.blcd = 1;
 
 		}
-
+	}
 	}
 		
 	vController.vidControl.prototype.showLink = function(){		
-				switch (lkButnStatus)
+				switch (this.lkButnStatus_)
 		{
 
 			case 0:
-				lnk.dom.ondblclick = function(){
-				lnk.dom.select();
-				};
-				lnk.dom.value = getSrc(this.videoEl_);
-				lnk.dom.readOnly = true;
-				lnk.dom.style.maxWidth=Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth)+'px';
-				this.linkButton_.parentNode.insertBefore(lnk.dom, this.linkButton_.nextSibling);
+				this.lnk_.dom.value = getSrc(this.videoEl_);
+				this.lnk_.dom.readOnly = true;
+				this.lnk_.dom.style.maxWidth=Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth)+'px';
+				this.linkButton_.parentNode.insertBefore(this.lnk_.dom, this.linkButton_.nextSibling);
 
-				lnk.dom.style.width = lnk.dom.value.length + "ch";
-				lnk.dom.style.display = 'initial';
+				this.lnk_.dom.style.width = this.lnk_.dom.value.length + "ch";
+				this.lnk_.dom.style.display = 'initial';
 
-				lnk.dom.select();
+				this.lnk_.dom.select();
 				
-				lkButnStatus=1;
+				this.lkButnStatus_=1;
 			break;
 			case 1:
-				lnk.dom.style.display = 'none';
-				lkButnStatus=2;
+				this.lnk_.dom.style.display = 'none';
+				this.lkButnStatus_=2;
 			break;
 			case 2:
 			let new_src=getSrc(this.videoEl_);
-				if(lnk.dom.value!=new_src){
-				lnk.dom.readOnly = false;
-				lnk.dom.value = new_src;
-				lnk.dom.readOnly = true;
+				if(this.lnk_.dom.value!=new_src){
+				this.lnk_.dom.readOnly = false;
+				this.lnk_.dom.value = new_src;
+				this.lnk_.dom.readOnly = true;
 				}
-				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
-				lnk.dom.style.width = lnk.dom.value.length + "ch";
-				lnk.dom.style.display = 'initial';
-				lnk.dom.select();
-				lkButnStatus=1;
+				this.lnk_.dom.style.maxWidth=getMax(this.lnk_.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
+				this.lnk_.dom.style.width = this.lnk_.dom.value.length + "ch";
+				this.lnk_.dom.style.display = 'initial';
+				this.lnk_.dom.select();
+				this.lkButnStatus_=1;
 			break;
 		}
 		
@@ -1133,7 +1135,7 @@ span.speed-indicator{
 	
 	vController.vidControl.prototype.doSubs = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 
 		function colour_subs(str)
 		{
@@ -1180,107 +1182,108 @@ span.speed-indicator{
 
 			return srt;
 		}
-
-		switch (subButnStatus)
+			
+		thisSub = this;
+		
+		switch (thisSub.subButnStatus_)
 		{
-
+			
 			case null:
 
-				thisSub = this;
 
-				subti.dom = document.createElement('textarea');
+				thisSub.subti_.dom = document.createElement('textarea');
 
-				thisSub.subsButton_.parentNode.insertBefore(subti.dom, thisSub.subsButton_.nextSibling);
+				thisSub.subsButton_.parentNode.insertBefore(thisSub.subti_.dom, thisSub.subsButton_.nextSibling);
 
-				subti.dom.id = "subti";
+				thisSub.subti_.dom.id = "subti";
 
-				openSRT = document.createElement('input');
-				openSRT.type = "file";
-				openSRT.accept = ".srt";
-				subti.dom.parentNode.insertBefore(openSRT, subti.dom.nextSibling);
+				thisSub.openSRT_ = document.createElement('input');
+				thisSub.openSRT_.type = "file";
+				thisSub.openSRT_.accept = ".srt";
+				thisSub.subti_.dom.parentNode.insertBefore(thisSub.openSRT_, thisSub.subti_.dom.nextSibling);
 
-				openSRT.onchange = function(){
+				thisSub.openSRT_.onchange = function(){
 					
 					var fr = new FileReader();
 					fr.onload = function()
 					{
-						subti.dom.value = this.result;
+						thisSub.subti_.dom.value = this.result;
 					}
 
 					fr.readAsText(this.files[0]);
 
 				}
 
-				subButnStatus = 0;
+				thisSub.subButnStatus_ = 0;
 				break;
 
 			case 0:
-				if (subti.dom.value == "")
+				if (thisSub.subti_.dom.value == "")
 				{
-					subti.dom.style.display = "none";
-					openSRT.style.display = "none";
-					subButnStatus = 2;
+					thisSub.subti_.dom.style.display = "none";
+					thisSub.openSRT_.style.display = "none";
+					thisSub.subButnStatus_ = 2;
 
 				}
 				else
 				{
 
-					s.track = document.createElement('track');
+					thisSub.s_.track = document.createElement('track');
 
-					this.videoEl_.appendChild(s.track);
+					thisSub.videoEl_.appendChild(thisSub.s_.track);
 
-					s.vtt = 'WEBVTT\n\n' + subti.dom.value;
+					thisSub.s_.vtt = 'WEBVTT\n\n' + thisSub.subti_.dom.value;
 					
-					console.log(s.track);
+					console.log(thisSub.s_.track);
 					subsCSS = document.createElement("style");
 
 					subsCSS.type = "text/css";
 					subsCSS.innerHTML = "::cue {" + subsStyl + "} ::-webkit-media-text-track-display {" + subsStylTwo + "}";
 					hed.appendChild(subsCSS);
 
-					s.track.id = "subs1";
-					s.vtt = colour_subs(s.vtt);
-					s.vtt = srtVttTiming(s.vtt);
-					//console.log(s.vtt);
+					thisSub.s_.track.id = "subs1";
+					thisSub.s_.vtt = colour_subs(thisSub.s_.vtt);
+					thisSub.s_.vtt = srtVttTiming(thisSub.s_.vtt);
+					//console.log(thisSub.s_.vtt);
 
-					s.track.src = vttURL(s.vtt);
-					s.track.track.mode = "showing";
+					thisSub.s_.track.src = vttURL(thisSub.s_.vtt);
+					thisSub.s_.track.track.mode = "showing";
 
-					subti.dom.style.display = "none";
-					openSRT.style.display = "none";
+					thisSub.subti_.dom.style.display = "none";
+					thisSub.openSRT_.style.display = "none";
 					thisSub.subsButton_.textContent = '‗';
 
 					//console.log('subs loaded!');
 
-					s.delIndicator = document.createElement('span');
-					s.delIndicator.style.marginLeft = '5px';
-					s.delIndicator.style.marginRight = '5px';
-					s.delIndicator.textContent = ' ms';
-					openSRT.parentNode.insertBefore(s.delIndicator, thisSub.subsButton_.nextSibling);
+					thisSub.s_.delIndicator = document.createElement('span');
+					thisSub.s_.delIndicator.style.marginLeft = '5px';
+					thisSub.s_.delIndicator.style.marginRight = '5px';
+					thisSub.s_.delIndicator.textContent = ' ms';
+					thisSub.openSRT_.parentNode.insertBefore(thisSub.s_.delIndicator, thisSub.subsButton_.nextSibling);
 
-					s.track.oncuechange= function(){
+					thisSub.s_.track.oncuechange= function(){
 
-						if (s.origTrack == 0)
+						if ((thisSub.s_.origTrack == 0 || thisSub.s_.origTrack.text.length<thisSub.s_.track.track.cues.length) && (thisSub.s_.track!=0))
 						{
-							balanceSubs();
+							balanceSubs(thisSub);
 
 							var stTm = [];
 							var edTm = [];
 							var tTxt = [];
 
-							for (let m = 0; m < s.track.track.cues.length; m++)
+							for (let m = 0; m < thisSub.s_.track.track.cues.length; m++)
 							{
-								stTm[m] = s.track.track.cues[m].startTime;
-								edTm[m] = s.track.track.cues[m].endTime;
-								tTxt[m] = s.track.track.cues[m].text;
+								stTm[m] = thisSub.s_.track.track.cues[m].startTime;
+								edTm[m] = thisSub.s_.track.track.cues[m].endTime;
+								tTxt[m] = thisSub.s_.track.track.cues[m].text;
 							}
 
-							s.origTrack = {
+							thisSub.s_.origTrack = {
 								"start": stTm,
 								"end": edTm,
 								"text": tTxt
 							};
-							s.delIndicator.textContent="0 ms";
+							thisSub.s_.delIndicator.textContent="0 ms";
 							
 							thisSub.videoEl_.play();
 							
@@ -1289,48 +1292,48 @@ span.speed-indicator{
 						}
 					}
 
-				this.subsButton_.style.backgroundColor = "#36ff07";
-				subButnStatus = 1;
+				thisSub.subsButton_.style.backgroundColor = "#36ff07";
+				thisSub.subButnStatus_ = 1;
 				}
 				break;
 
 			case 1:
 
-				subti.dom.style.display = "initial";
-				openSRT.style.display = "initial";
+				thisSub.subti_.dom.style.display = "initial";
+				thisSub.openSRT_.style.display = "initial";
 
 				thisSub.subsButton_.textContent = '_';
-				s.origTrack = 0;
+				thisSub.s_.origTrack = 0;
 
 				let tracks = document.getElementsByTagName('TRACK');
 				for (let i = 0; i < tracks.length; i++)
 				{
-					if (tracks[i].src = s.track.src)
+					if (tracks[i].src = thisSub.s_.track.src)
 					{
 						tracks[i].remove();
 					}
 				}
-				s.delIndicator.style.display = "none";
-				s.delIndicator.textContent = '0 ms';
-				s.track = 0;
-				this.subsButton_.style.backgroundColor = "white";
-				s.d = 0;
-				s.blcd = 0;
+				thisSub.s_.delIndicator.style.display = "none";
+				thisSub.s_.delIndicator.textContent = '0 ms';
+				thisSub.s_.track = 0;
+				thisSub.subsButton_.style.backgroundColor = "white";
+				thisSub.s_.d = 0;
+				thisSub.s_.blcd = 0;
 
 				subsCSS.innerHTML = '';
-				subButnStatus = 2;
+				thisSub.subButnStatus_ = 2;
 				break;
 
 			case 2:
-				subti.dom.style.display = "initial";
-				openSRT.style.display = "initial";
-				subButnStatus = 0;
+				thisSub.subti_.dom.style.display = "initial";
+				thisSub.openSRT_.style.display = "initial";
+				thisSub.subButnStatus_ = 0;
 				break;
 
 			case 3:
-				s.track.track.mode = "showing";
-				this.subsButton_.style.backgroundColor = "#36ff07";
-				subButnStatus = 1;
+				thisSub.s_.track.track.mode = "showing";
+				thisSub.subsButton_.style.backgroundColor = "#36ff07";
+				thisSub.subButnStatus_ = 1;
 				break;
 
 		}
@@ -1339,13 +1342,13 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.setSpeed = function(s)
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.playbackRate = s;
 	};
 
 	vController.vidControl.prototype.switchSpeed = function()
 	{
-		c_hide(this.el_, this.bgEl_, this.videoEl_);
+		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		if (this.videoEl_.playbackRate != swtchTo)
 		{
 			pR1 = this.videoEl_.playbackRate;
@@ -1361,50 +1364,50 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.showHide = function()
 	{
-		if ((permashow == 0) && (permahide == 0))
+		if ((this.permashow_ == 0) && (this.permahide_ == 0))
 		{
 			this.el_.style.display = 'initial';
 			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '0.78';
-			permashow = 1;
+			this.permashow_ = 1;
 			clearTimeout(disap);
-			//c_hide(this.el_,this.bgEl_, this.videoEl_);
-			if(isol==1){
+			//c_hide(this.el_,this.bgEl_, this.videoEl_,this);
+			if(this.isol_==1){
 			console.log('Perma-show active! - Video isolated.');
 			}else{
 			console.log('Perma-show active!');
 			}
 		}
-		else if ((permashow == 1) && (permahide == 0))
+		else if ((this.permashow_ == 1) && (this.permahide_ == 0))
 		{
-			permashow = 0;
-			permahide = 1;
+			this.permashow_ = 0;
+			this.permahide_ = 1;
 			clearTimeout(disap);
-			//	c_hide(this.el_,this.bgEl_, this.videoEl_);
+			//	c_hide(this.el_,this.bgEl_, this.videoEl_, this);
 			this.el_.style.display = 'none';
 			this.el_.style.visibility = 'hidden';
 			this.el_.style.opacity = '';
-			if(isol==1){
+			if(this.isol_==1){
 			console.log('Perma-hide active! - Video isolated.');
 			}else{
 			console.log('Perma-hide active!');
 			}
 		}
-		else if ((permashow == 0) && (permahide == 1))
+		else if ((this.permashow_ == 0) && (this.permahide_ == 1))
 		{
-			permahide = 0;
-			isol=(isol==0)?1:0;
-			if(isol==1){
+			this.permahide_ = 0;
+			this.isol_=(this.isol_==0)?1:0;
+			if(this.isol_==1){
 			isolator.innerHTML=isolator_HTML;
 			this.videoEl_.style.display = 'initial';
 			this.videoEl_.style.visibility = 'initial';
 			this.videoEl_.controls = true;
-			c_hide(this.el_, this.bgEl_, this.videoEl_);
+			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 			console.log('No permanence! - Video isolated.');
 			}else{
 			isolator.innerHTML="";
 			this.videoEl_.controls=(this.videoEl_.getAttribute('def_ctrls')=='false')?false:true;
-			c_hide(this.el_, this.bgEl_, this.videoEl_);
+			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 			this.el_.style.display = 'initial';
 			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '';
@@ -1542,7 +1545,7 @@ span.speed-indicator{
 			else
 			{
 				
-				tmpScObj = {
+				this.tmpScObj_ = {
 					id: null,
 					ctrl: null,
 					alt: null,
@@ -1555,26 +1558,26 @@ span.speed-indicator{
 
 				if (e.altKey)
 				{
-					tmpScObj.alt = true;
+					this.tmpScObj_.alt = true;
 				}
 				if (e.ctrlKey)
 				{
-					tmpScObj.ctrl = true;
+					this.tmpScObj_.ctrl = true;
 				}
 
 				if (e.shiftKey)
 				{
-					tmpScObj.shift = true;
+					this.tmpScObj_.shift = true;
 				}
 
-				tmpScObj.code = e.code;
+				this.tmpScObj_.code = e.code;
 
-				scCompareE = [tmpScObj.alt, tmpScObj.code, tmpScObj.ctrl, tmpScObj.shift];
+				this.scCompareE_ = [this.tmpScObj_.alt, this.tmpScObj_.code, this.tmpScObj_.ctrl, this.tmpScObj_.shift];
 
 				for (let i = 0; i <= 11; i++)
 				{
-					scCompareS = [objs[i].o.alt, objs[i].o.code, objs[i].o.ctrl, objs[i].o.shift];
-					if (JSON.stringify(scCompareE) === JSON.stringify(scCompareS))
+					this.scCompareS_ = [objs[i].o.alt, objs[i].o.code, objs[i].o.ctrl, objs[i].o.shift];
+					if (JSON.stringify(this.scCompareE_) === JSON.stringify(this.scCompareS_))
 					{
 
 						if (i == 0)
@@ -1616,63 +1619,63 @@ span.speed-indicator{
 						if (i == 6)
 						{
 							e.preventDefault();
-							s.d += sDel;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d += sDel;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 						if (i == 7)
 						{
 							e.preventDefault();
-							s.d -= sDel;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d -= sDel;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 						if (i == 8)
 						{
 							e.preventDefault();
-							s.d += sDelF;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d += sDelF;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 						if (i == 9)
 						{
 							e.preventDefault();
-							s.d -= sDelF;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d -= sDelF;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 						if (i == 10)
 						{
 							e.preventDefault();
-							s.d += 1;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d += 1;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 						if (i == 11)
 						{
 							e.preventDefault();
-							s.d -= 1;
-							subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+							this.s_.d -= 1;
+							subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 						}
 
 					}
 				}
 
-				if (JSON.stringify(scCompareE) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
+				if (JSON.stringify(this.scCompareE_) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
 				{
 					e.preventDefault();
 					subUpDwn(sMv * -1);
 
 				}
 
-				if (JSON.stringify(scCompareE) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
+				if (JSON.stringify(this.scCompareE_) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
 				{
 					e.preventDefault();
 					subUpDwn(sMv * 1);
 
 				}
 
-				tmpScObj = {
+				this.tmpScObj_ = {
 					id: null,
 					ctrl: null,
 					alt: null,
@@ -1682,8 +1685,8 @@ span.speed-indicator{
 					wheelDeltaX: null,
 					wheelDeltaY: null
 				};
-				scCompareE = [];
-				scCompareS = [];
+				this.scCompareE_ = [];
+				this.scCompareS_ = [];
 
 			}
 
@@ -1692,41 +1695,41 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.handleFocus_ = function(e)
 	{		
-			if (e.target === lnk.dom)
+			if (e.target === this.lnk_.dom)
 			{
-			fc_hv.lnk_fc=true;
+			this.fc_hv_.lnk_fc=true;
 			}
-			if (e.target === subti.dom)
+			if (e.target === this.subti_.dom)
 			{
-			fc_hv.subti_fc=true;
+			this.fc_hv_.subti_fc=true;
 			}
 
 	};
 
 	vController.vidControl.prototype.handleFocusOut_ = function(e)
 	{
-			if (e.target === lnk.dom)
+			if (e.target === this.lnk_.dom)
 			{
-			fc_hv.lnk_fc=false;
+			this.fc_hv_.lnk_fc=false;
 			}
-			if (e.target === subti.dom)
+			if (e.target === this.subti_.dom)
 			{
-			fc_hv.subti_fc=false;
+			this.fc_hv_.subti_fc=false;
 			}
 
 	};
 	
 	vController.vidControl.prototype.handleMouseOver_ = function(e)
 	{
-			fc_hv.bar_hv=true;
-			c_hide(this.el_, this.bgEl_, this.videoEl_);
+			this.fc_hv_.bar_hv=true;
+			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 	};	
 	
 	vController.vidControl.prototype.handleMouseOut_ = function(e)
 	{
-			fc_hv.bar_hv=false;
-			fc_hv.lnk_fc=false;
-			c_hide(this.el_, this.bgEl_, this.videoEl_);
+			this.fc_hv_.bar_hv=false;
+			this.fc_hv_.lnk_fc=false;
+			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 	};
 
 		vController.vidControl.prototype.handleMouseDown_ = function(e)
@@ -1735,20 +1738,30 @@ span.speed-indicator{
 			e.path[0].tagName == 'TEXTAREA' ||
 			e.path[0].isContentEditable)
 		{
-			e.path[0].offsetParent.draggable = false;
+				e.path[0].offsetParent.draggable = false;
+				return;
 		}
 		else
 		{
 
-			e.path[0].offsetParent.draggable = true;
-
-			if (!e.target.classList.contains('vController-btn'))
+			if (!ifAnyOf(e.path[0],this.barButtonsArr_))
 			{
-				return;
+				//e.preventDefault();
+				e.stopPropagation();
+				e.path[0].offsetParent.draggable = true;
+				this.el_.style.cursor = 'grabbing';
 			}
-
+		}
+	};		
+	
+	vController.vidControl.prototype.handleClick_ = function(e)
+	{
+		if (!(e.path[0].tagName == 'INPUT' ||
+			e.path[0].tagName == 'TEXTAREA' ||
+			e.path[0].isContentEditable))
+		{
 			if (e.target === this.switchButton_)
-			{
+			{				
 				e.preventDefault();
 				e.stopPropagation();
 				this.switchSpeed();
@@ -1793,18 +1806,12 @@ span.speed-indicator{
 			{
 				e.preventDefault();
 				e.stopPropagation();
-				permashow = 1;
-				permahide = 0;
-				fc_hv.lnk_fc=false;
-				fc_hv.subti_fc=false;
-				fc_hv.bar_hv=false;
+				this.permashow_ = 1;
+				this.permahide_ = 0;
+				this.fc_hv_.lnk_fc=false;
+				this.fc_hv_.subti_fc=false;
+				this.fc_hv_.bar_hv=false;
 				this.showHide();
-			}
-			else
-			{
-				e.preventDefault();
-				e.stopPropagation();
-				this.cursor = 'grabbing';
 			}
 
 		}
@@ -1813,16 +1820,13 @@ span.speed-indicator{
 	vController.vidControl.prototype.handleWheel_ = function(e)
 	{
 
-		if (e.path[0].tagName == 'INPUT' ||
+		if (!(e.path[0].tagName == 'INPUT' ||
 			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable)
-		{
-			return;
-		}
-		else
+			e.path[0].isContentEditable))
+
 		{
 
-			tmpScObj = {
+			this.tmpScObj_ = {
 				id: null,
 				ctrl: null,
 				alt: null,
@@ -1833,28 +1837,28 @@ span.speed-indicator{
 				wheelDeltaY: null
 			};
 
-			tmpScObj.wheelDeltaX = e.deltaX / Math.abs(e.deltaX);
-			tmpScObj.wheelDeltaY = e.deltaY / Math.abs(e.deltaY);
+			this.tmpScObj_.wheelDeltaX = e.deltaX / Math.abs(e.deltaX);
+			this.tmpScObj_.wheelDeltaY = e.deltaY / Math.abs(e.deltaY);
 			if (e.altKey)
 			{
-				tmpScObj.alt = true;
+				this.tmpScObj_.alt = true;
 			}
 			if (e.ctrlKey)
 			{
-				tmpScObj.ctrl = true;
+				this.tmpScObj_.ctrl = true;
 			}
 
 			if (e.shiftKey)
 			{
-				tmpScObj.shift = true;
+				this.tmpScObj_.shift = true;
 			}
 
-			scCompareE = [tmpScObj.alt, tmpScObj.ctrl, tmpScObj.shift, tmpScObj.wheelDeltaX, tmpScObj.wheelDeltaY];
+			this.scCompareE_ = [this.tmpScObj_.alt, this.tmpScObj_.ctrl, this.tmpScObj_.shift, this.tmpScObj_.wheelDeltaX, this.tmpScObj_.wheelDeltaY];
 
 			for (let i = 0; i <= 11; i++)
 			{
-				scCompareS = [objs[i].o.alt, objs[i].o.ctrl, objs[i].o.shift, objs[i].o.wheelDeltaX, objs[i].o.wheelDeltaY];
-				if (JSON.stringify(scCompareE) === JSON.stringify(scCompareS))
+				this.scCompareS_ = [objs[i].o.alt, objs[i].o.ctrl, objs[i].o.shift, objs[i].o.wheelDeltaX, objs[i].o.wheelDeltaY];
+				if (JSON.stringify(this.scCompareE_) === JSON.stringify(this.scCompareS_))
 				{
 
 					if (i == 0)
@@ -1896,55 +1900,55 @@ span.speed-indicator{
 					if (i == 6)
 					{
 						e.preventDefault();
-						s.d += sDel;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d += sDel;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 					if (i == 7)
 					{
 						e.preventDefault();
-						s.d -= sDel;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d -= sDel;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 					if (i == 8)
 					{
 						e.preventDefault();
-						s.d += sDelF;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d += sDelF;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 					if (i == 9)
 					{
 						e.preventDefault();
-						s.d -= sDelF;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d -= sDelF;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 					if (i == 10)
 					{
 						e.preventDefault();
-						s.d += 1;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d += 1;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 					if (i == 11)
 					{
 						e.preventDefault();
-						s.d -= 1;
-						subsDelay(s.track, s.origTrack, s.d, this.videoEl_, this.el_, this.bgEl_);
+						this.s_.d -= 1;
+						subsDelay(this.s_.track, this.s_.origTrack, this.s_.d, this.videoEl_, this.el_, this.bgEl_, this);
 					}
 
 				}
 			}
 
-			if (JSON.stringify(scCompareE) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
+			if (JSON.stringify(this.scCompareE_) === JSON.stringify([objs[12].o.alt, objs[12].o.code, objs[12].o.ctrl, objs[12].o.shift]))
 			{
 				e.preventDefault();
 				subUpDwn(-1 * sMv);
 			}
 
-			if (JSON.stringify(scCompareE) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
+			if (JSON.stringify(this.scCompareE_) === JSON.stringify([objs[13].o.alt, objs[13].o.code, objs[13].o.ctrl, objs[13].o.shift]))
 			{
 				e.preventDefault();
 				subUpDwn(1 * sMv);
@@ -1969,7 +1973,7 @@ span.speed-indicator{
 				}
 			}
 
-			tmpScObj = {
+			this.tmpScObj_ = {
 				id: null,
 				ctrl: null,
 				alt: null,
@@ -1979,62 +1983,46 @@ span.speed-indicator{
 				wheelDeltaX: null,
 				wheelDeltaY: null
 			};
-			scCompareE = [];
-			scCompareS = [];
+			this.scCompareE_ = [];
+			this.scCompareS_ = [];
 
 		}
-	}
-
-	/*
-	vController.vidControl.prototype.handleDblClick_ = function(e) {
-	        if (!e.target.classList.contains('vController-btn')) {
-	                return;
-	        }
-	        e.preventDefault();
-	        e.stopPropagation();
 	};
-	*/
 
-	function getOffset(el)
-	{
-		const rect = el.getBoundingClientRect();
-		return {
-			left: rect.left + window.scrollX,
-			top: rect.top + window.scrollY
-		};
-	}
+	vController.vidControl.prototype.handleDblClick_ = function(e) {
+		
+			if (e.path[0].tagName == 'INPUT' ||
+			e.path[0].tagName == 'TEXTAREA' ||
+			e.path[0].isContentEditable)
+		{
+			if (this.bgEl_.contains(e.path[0]))
+			{
+				e.path[0].select();
+			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			e.preventDefault();
+			e.stopPropagation();
+			
+			if(!ifAnyOf(e.target,this.barButtonsArr_))
+			{
+				this.el_.style.left = '';
+				this.el_.style.top = '';
+			}
+		}
+
+	};
 
 	vController.vidControl.prototype.handleDragEndEvent_ = function(e)
 	{
-		this.cursor = 'initial';
-		var leftPosition;
-
-		if (e.clientX < getOffset(this.videoEl_).left)
-		{
-			leftPosition = 0;
-		}
-		else if (e.clientX > getOffset(this.videoEl_).left + this.videoEl_.clientWidth)
-		{
-			leftPosition = this.videoEl_.clientWidth;
-		}
-		else
-		{
-			leftPosition = e.clientX - getOffset(this.videoEl_).left;
-		}
-
-		var topPosition;
-		if (e.clientY < getOffset(this.videoEl_).top)
-		{
-			topPosition = 0;
-		}
-		else if (e.clientY > getOffset(this.videoEl_).top + this.videoEl_.clientHeight)
-		{
-			topPosition = this.videoEl_.clientHeight;
-		}
-		else
-		{
-			topPosition = e.clientY - getOffset(this.videoEl_).top
-		}
+		this.el_.style.cursor = 'initial';
+		let leftPosition=getMax(0,parseFloat(window.getComputedStyle(this.el_).getPropertyValue('left'))+e.offsetX);
+		let topPosition=getMax(0,parseFloat(window.getComputedStyle(this.el_).getPropertyValue('top'))+e.offsetY);
 
 		this.el_.style.left = `${leftPosition}px`;
 		this.el_.style.top = `${topPosition}px`;
@@ -2092,16 +2080,16 @@ span.speed-indicator{
 	{
 
 			let new_src=getSrc(this.videoEl_);
-				if(lnk.dom.value!=new_src){
+				if(this.lnk_.dom.value!=new_src){
 				this.videoEl_.playbackRate=1;
-				if(lkButnStatus==1){
-				lnk.dom.readOnly = false;
-				lnk.dom.value = new_src;
-				lnk.dom.readOnly = true;
-				lnk.dom.style.maxWidth=getMax(lnk.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
-				lnk.dom.style.width = lnk.dom.value.length + "ch";
+				if(this.lkButnStatus_==1){
+				this.lnk_.dom.readOnly = false;
+				this.lnk_.dom.value = new_src;
+				this.lnk_.dom.readOnly = true;
+				this.lnk_.dom.style.maxWidth=getMax(this.lnk_.dom.style.maxWidth,Math.abs(this.videoEl_.clientWidth-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('margin-right'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-left'))-parseFloat(window.getComputedStyle(this.el_, null).getPropertyValue('padding-right'))-this.el_.clientWidth))	+'px';
+				this.lnk_.dom.style.width = this.lnk_.dom.value.length + "ch";
 				this.switchButton_.textContent = this.swtch();
-				lnk.dom.select();
+				this.lnk_.dom.select();
 				}else{
 				this.switchButton_.textContent = this.swtch();
 				}
@@ -2205,9 +2193,7 @@ span.speed-indicator{
 			}
 		
 		if(clnChk==0){
-			if((typeof instance.el_.parentNode!=='undefined')&&(instance.el_.parentNode!==null)){
-			instance.el_.parentNode.removeChild(instance.el_);
-			}
+			elRemover(instance.el_);
 			vController.vidControl.instances=removeEls(instance,vController.vidControl.instances);
 			}
 		
