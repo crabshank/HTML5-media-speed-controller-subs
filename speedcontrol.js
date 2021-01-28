@@ -750,8 +750,9 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.enterDocument = function()
 	{
-		const self = this;
-				var mouseDownHandler = self.handleMouseDown_.bind(self);
+		var self = this;
+		var mouseDownHandler = self.handleMouseDown_.bind(self);
+		var mouseUpHandler = self.handleMouseUp_.bind(self);
 		var wheelHandler = self.handleWheel_.bind(self);
 		var dblClickHandler = self.handleDblClick_.bind(self);
 		var clickHandler = self.handleClick_.bind(self);
@@ -767,12 +768,13 @@ span.speed-indicator{
 		self.bgEl_.addEventListener('focus', focusHandler, true);
 		self.bgEl_.addEventListener('focusout', focusOutHandler, true);
 		self.bgEl_.addEventListener('mousedown', mouseDownHandler, true);
+		self.bgEl_.addEventListener('mouseup', mouseUpHandler, true);
 		self.bgEl_.addEventListener('dblclick', dblClickHandler, true);
 		self.bgEl_.addEventListener('click', clickHandler, true);
 		self.bgEl_.addEventListener('wheel', wheelHandler, true);
 		
-		document.body.addEventListener('keydown', keydownHandler, true);
-		document.body.addEventListener('dragend', dragHandler, true);
+		window.addEventListener('keydown', keydownHandler, true);
+		window.addEventListener('dragend', dragHandler, true);
 		
 		self.el_.setAttribute('draggable', true);
 		self.lnk_.dom.value=getSrc(self.videoEl_);
@@ -1752,6 +1754,11 @@ span.speed-indicator{
 				this.el_.style.cursor = 'grabbing';
 			}
 		}
+	};	
+
+	vController.vidControl.prototype.handleMouseUp_ = function(e)
+	{
+				this.el_.style.cursor = 'initial';
 	};		
 	
 	vController.vidControl.prototype.handleClick_ = function(e)
