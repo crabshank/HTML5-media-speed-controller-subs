@@ -3,8 +3,8 @@
 	"name": "HTML5 media speed controller + subs",
 	"description": "Speed controls and subtitles for HTML5 media.",
 	"options_page": "options.html",     
-	"manifest_version": 2,
-	"version": "1.50.4",
+	"manifest_version": 3,
+	"version": "1.51.0",
 	"content_scripts": [
 	{
 	  "matches": ["<all_urls>"],
@@ -14,7 +14,7 @@
 	}
 	],
 	"permissions": ["fontSettings","activeTab","storage"],
-	"browser_action": {
+	"action": {
     "default_icon": "icon.png"
 	},
 	"icons": {
