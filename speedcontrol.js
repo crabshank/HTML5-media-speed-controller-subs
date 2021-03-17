@@ -231,7 +231,7 @@ function save_options()
 	},
 	{
 		"n": "videoCSS",
-		"s": "brightness(1)\ncontrast(1)\nsaturate(1)\nhue-rotate(0deg)\ninvert(0)\nsepia(0)\nblur(0px);"
+		"s": "brightness(1)\ncontrast(1)\nsaturate(1)\nhue-rotate(0deg)\ninvert(0)\nsepia(0)\nblur(0px)\n !important;"
 	},
 	{
 		"n": "vidCSS",
@@ -502,7 +502,7 @@ function runExt()
 					else
 					{
 
-						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample");';
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample") !important;';
 
 					}
 
