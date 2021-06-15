@@ -2046,20 +2046,49 @@ span.speed-indicator{
 
 	let rem = "0:00:00";
 
-	function cd_s_hmmss(s)
+function timeAhead(video){
+				let c_i=video.currentTime;
+				var rgs=[];
+			for (let k=video.buffered.length-1; k>=0; k--){
+			let t_i=video.buffered.end(k);
+			let s_i=video.buffered.start(k);
+				if(c_i>=s_i && t_i>=c_i){
+					rgs.push([s_i,t_i]);
+				}
+			}
+			
+			var tot=0;
+			if(rgs.length>0){
+			let sorted=rgs.sort((a, b) => {return a[0] - b[0];})
+			tot=sorted[0][1]-c_i;
+			for (let k=1; k<sorted.length; k++){
+				if(sorted[k-1][1]==sorted[k][0]){
+					tot+=sorted[k][1]-sorted[k][0];
+				}else{
+					break;
+				}
+			}
+			}
+			
+					return cd_s_hmmss((video.playbackRate==0)?0:tot/video.playbackRate,true);
+
+}
+
+
+	function cd_s_hmmss(s,rndD)
 	{
 
 		var ss = "00";
 		var mm = "00";
 		var hh = "";
 
-		var hours = Math.floor(Math.ceil(s) / 3600);
+		var hours = getMax(0,Math.floor(Math.ceil(s) / 3600));
 		if (hours > 0)
 		{
 			hh = hours + ":";
 		}
 
-		var mins = Math.floor((Math.ceil(s) - hours * 3600) / 60);
+		var mins = getMax(0,Math.floor((Math.ceil(s) - hours * 3600) / 60));
 
 		if (mins < 10)
 		{
@@ -2069,7 +2098,7 @@ span.speed-indicator{
 		{
 			mm = mins;
 		}
-		var secs = Math.ceil(s - hours * 3600 - mins * 60);
+		var secs = (rndD)?getMax(0,Math.floor(s - hours * 3600 - mins * 60)):getMax(0,Math.ceil(s - hours * 3600 - mins * 60));
 
 		if (secs < 10)
 		{
@@ -2104,34 +2133,14 @@ span.speed-indicator{
 		let speed = this.videoEl_.playbackRate;
 		if (speed!=0){
 		if(!isFinite(this.videoEl_.duration)){
-		
-		if(this.videoEl_.buffered.length>0){
-		let bufEnd=this.videoEl_.buffered.end(this.videoEl_.buffered.length-1);
-		if((isFinite(bufEnd)) && (bufEnd>=0)){
-		rem = (bufEnd - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
-		rem = cd_s_hmmss(rem);
-		return speed.toLocaleString('en-GB',
-		{
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 7
-		}) + " | " + rem;
-		}else{
-		return speed.toLocaleString('en-GB',
-		{
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 7
-		});
-		}
-		}else{
-		return speed.toLocaleString('en-GB',
-		{
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 7
-		});
-		}
+			return speed.toLocaleString('en-GB',
+				{
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 7
+				}) + " | " + timeAhead(this.videoEl_);
 		}else{
 		rem = (this.videoEl_.duration - this.videoEl_.currentTime) / this.videoEl_.playbackRate;
-		rem = cd_s_hmmss(rem);
+		rem = cd_s_hmmss(rem,false);
 		return speed.toLocaleString('en-GB',
 		{
 			minimumFractionDigits: 2,
