@@ -346,9 +346,7 @@ function restore_options()
 		}
 		else
 		{
-
 			save_options();
-			restore_options();
 		}
 	}else{
 		restore_options();
@@ -930,6 +928,7 @@ function save_options()
 			{
 				status.textContent = '';
 			}, 750);
+			restore_options();
 		});
 	}
 }

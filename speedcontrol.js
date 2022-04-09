@@ -3,6 +3,33 @@ var vController = vController || {};
 var hed=[...document.getElementsByTagName("head")][0];
 var bdy=[...document.getElementsByTagName("body")][0];
 
+function getTagNameShadow(docm, tgn){
+var shrc=[docm];
+var shrc_l=1;
+
+let srCnt=0;
+
+while(srCnt<shrc_l){
+	allNodes=[shrc[srCnt],...shrc[srCnt].querySelectorAll('*')];
+	for(let i=0, len=allNodes.length; i<len; i++){
+		if(!!allNodes[i] && typeof allNodes[i] !=='undefined' && allNodes[i].tagName===tgn && i>0){
+			shrc.push(allNodes[i]);
+		}
+
+		if(!!allNodes[i].shadowRoot && typeof allNodes[i].shadowRoot !=='undefined'){
+			let c=allNodes[i].shadowRoot.children;
+			shrc.push(...c);
+		}
+	}
+	srCnt++;
+	shrc_l=shrc.length;
+}
+	shrc=shrc.slice(1);
+	let out=shrc.filter((c)=>{return c.tagName===tgn;});
+	
+	return out;
+}
+
 var isolator=document.createElement('style');
 
 var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;};";
@@ -181,9 +208,7 @@ function restore_options()
 		}
 		else
 		{
-
 			save_options();
-			restore_options();
 		}
 	});
 
@@ -449,6 +474,7 @@ function save_options()
 	}, function()
 	{
 		console.log('Default options saved.');
+		restore_options();
 	});
 
 }
@@ -639,12 +665,17 @@ span.speed-indicator{
 		closeButton.textContent = '🗙';
 		closeButton.classList.add('vController-btn', 'vController-close-button');
 
-		this.videoEl_.parentElement.insertBefore(container, this.videoEl_);
+		this.videoEl_.insertAdjacentElement('beforebegin', container);
 
 		this.videoEl_.classList.add('vController-video');
 		this.el_ = container;
 		this.el_.classList.add(vController.vidControl.CLASS_NAME);
 		this.el_.style.zIndex=Number.MAX_SAFE_INTEGER;
+		this.el_.style.position='absolute';
+		this.el_.style.top='0px';
+		this.el_.style.left='0px';
+		this.el_.setAttribute('baseX',0);
+		this.el_.setAttribute('baseY',0);
 		this.bgEl_ = bg;
 		this.speedIndicator_ = speedIndicator;
 		this.switchButton_ = switchButton;
@@ -660,6 +691,7 @@ span.speed-indicator{
 		//this.defOpacity_ = this.el_.style.opacity;
 		this.openSRT_={};
 		this.subti_ = {dom: 0};
+		this.is_vtt_ = false;
 		this.fc_hv_={lnk_fc: false,	subti_fc: false, bar_hv: false};
 		this.s_ = {track: 0, origTrack: 0, vtt: "WEBVTT\n\n00:00:00.000 --> 9999:59:59.999\n", d: 0, delIndicator: 0, blcd: 0};
 		this.permashow_=0;
@@ -761,6 +793,7 @@ span.speed-indicator{
 		var mouseOutHandler = self.handleMouseOut_.bind(self);
 		var focusHandler = self.handleFocus_.bind(self);
 		var focusOutHandler = self.handleFocusOut_.bind(self);
+		var dragStartHandler = self.handleDragStartEvent_.bind(self);
 		var dragHandler = self.handleDragEndEvent_.bind(self);
 		
 		self.el_.addEventListener('mouseover', mouseOverHandler, true);
@@ -774,6 +807,7 @@ span.speed-indicator{
 		self.bgEl_.addEventListener('wheel', wheelHandler, true);
 		
 		window.addEventListener('keydown', keydownHandler, true);
+		window.addEventListener('dragstart', dragStartHandler, true);
 		window.addEventListener('dragend', dragHandler, true);
 		
 		self.el_.setAttribute('draggable', true);
@@ -1201,7 +1235,7 @@ span.speed-indicator{
 
 				thisSub.openSRT_ = document.createElement('input');
 				thisSub.openSRT_.type = "file";
-				thisSub.openSRT_.accept = ".srt";
+				thisSub.openSRT_.accept = ".srt,.vtt";
 				thisSub.subti_.dom.parentNode.insertBefore(thisSub.openSRT_, thisSub.subti_.dom.nextSibling);
 
 				thisSub.openSRT_.onchange = function(){
@@ -1211,9 +1245,10 @@ span.speed-indicator{
 					{
 						thisSub.subti_.dom.value = this.result;
 					}
-
+					
+					thisSub.is_vtt_=(this.files[0].name.endsWith('.vtt'))?true:false;
 					fr.readAsText(this.files[0]);
-
+					
 				}
 
 				thisSub.subButnStatus_ = 0;
@@ -1230,24 +1265,28 @@ span.speed-indicator{
 				else
 				{
 
-					thisSub.s_.track = document.createElement('track');
+						thisSub.s_.track = document.createElement('track');
 
-					thisSub.videoEl_.appendChild(thisSub.s_.track);
+						thisSub.videoEl_.appendChild(thisSub.s_.track);
 
-					thisSub.s_.vtt = 'WEBVTT\n\n' + thisSub.subti_.dom.value;
+						console.log(thisSub.s_.track);
+						subsCSS = document.createElement("style");
+
+						subsCSS.type = "text/css";
+						thisSub.s_.track.id = "subs1";
+						
+						if(!thisSub.is_vtt_){
+							thisSub.s_.vtt = 'WEBVTT\n\n' + thisSub.subti_.dom.value;
+							subsCSS.innerHTML = "::cue {" + subsStyl + "} ::-webkit-media-text-track-display {" + subsStylTwo + "}";
+
+							thisSub.s_.vtt = colour_subs(thisSub.s_.vtt);
+							thisSub.s_.vtt = srtVttTiming(thisSub.s_.vtt);
+					}else{
+						thisSub.s_.vtt = thisSub.subti_.dom.value;
+					}
 					
-					console.log(thisSub.s_.track);
-					subsCSS = document.createElement("style");
-
-					subsCSS.type = "text/css";
-					subsCSS.innerHTML = "::cue {" + subsStyl + "} ::-webkit-media-text-track-display {" + subsStylTwo + "}";
 					hed.appendChild(subsCSS);
-
-					thisSub.s_.track.id = "subs1";
-					thisSub.s_.vtt = colour_subs(thisSub.s_.vtt);
-					thisSub.s_.vtt = srtVttTiming(thisSub.s_.vtt);
-					//console.log(thisSub.s_.vtt);
-
+					
 					thisSub.s_.track.src = vttURL(thisSub.s_.vtt);
 					thisSub.s_.track.track.mode = "showing";
 
@@ -1307,7 +1346,7 @@ span.speed-indicator{
 				thisSub.subsButton_.textContent = '_';
 				thisSub.s_.origTrack = 0;
 
-				let tracks = document.getElementsByTagName('TRACK');
+				let tracks = getTagNameShadow(document,'TRACK');
 				for (let i = 0; i < tracks.length; i++)
 				{
 					if (tracks[i].src = thisSub.s_.track.src)
@@ -1321,7 +1360,6 @@ span.speed-indicator{
 				thisSub.subsButton_.style.backgroundColor = "white";
 				thisSub.s_.d = 0;
 				thisSub.s_.blcd = 0;
-
 				subsCSS.innerHTML = '';
 				thisSub.subButnStatus_ = 2;
 				break;
@@ -2018,21 +2056,31 @@ span.speed-indicator{
 			
 			if(!ifAnyOf(e.target,this.barButtonsArr_))
 			{
-				this.el_.style.left = '';
-				this.el_.style.top = '';
+				this.el_.style.transform = `translate(0px, 0px)`;
+				this.el_.setAttribute('baseX',0);
+				this.el_.setAttribute('baseY',0);
 			}
 		}
 
 	};
 
+	vController.vidControl.prototype.handleDragStartEvent_ = function(e)
+	{
+		this.el_.style.cursor = 'grabbing';
+		this.el_.setAttribute('dragStartX',e.layerX);
+		this.el_.setAttribute('dragStartY',e.layerY);
+	};	
 	vController.vidControl.prototype.handleDragEndEvent_ = function(e)
 	{
 		this.el_.style.cursor = 'initial';
-		let leftPosition=getMax(0,parseFloat(window.getComputedStyle(this.el_).getPropertyValue('left'))+e.offsetX);
-		let topPosition=getMax(0,parseFloat(window.getComputedStyle(this.el_).getPropertyValue('top'))+e.offsetY);
+		
+		let leftPosition=getMax(0,parseFloat(this.el_.getAttribute('baseX'))+e.layerX-parseFloat(this.el_.getAttribute('dragStartX')));
+		let topPosition=getMax(0,parseFloat(this.el_.getAttribute('baseY'))+e.layerY-parseFloat(this.el_.getAttribute('dragStartY')));
+		
+		this.el_.setAttribute('baseX',leftPosition);
+		this.el_.setAttribute('baseY',topPosition);
 
-		this.el_.style.left = `${leftPosition}px`;
-		this.el_.style.top = `${topPosition}px`;
+		this.el_.style.transform = `translate(${leftPosition}px,${topPosition}px)`;
 	};
 
 	vController.vidControl.prototype.getSpeed = function()
@@ -2183,16 +2231,11 @@ function timeAhead(video){
 	}
 	}
 
-	/*vController.vidControl.prototype.delete = function()
-	{
-		this.el_.parentNode.removeChild(this.el_);
-	};*/
-
 	vController.vidControl.insertAll = function()
 	{
 		var videoTags = [
-			...document.getElementsByTagName('VIDEO'),
-			...document.getElementsByTagName('AUDIO')
+			...getTagNameShadow(document,'VIDEO'),
+			...getTagNameShadow(document,'AUDIO')
 		];
 
 	if(vController.vidControl.instances.length>0){
