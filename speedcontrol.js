@@ -1462,10 +1462,10 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.handleKeyDown_ = function(e)
 	{
-		
-		if ((e.path[0].tagName == 'INPUT')||(e.path[0].tagName == 'TEXTAREA')||(e.path[0].isContentEditable))
+		let pth=e.composedPath()[0];
+		if ((pth.tagName == 'INPUT')||(pth.tagName == 'TEXTAREA')||(pth.isContentEditable))
 		{
-			if(this.bgEl_.contains(e.path[0]))
+			if(this.bgEl_.contains(pth))
 			{
 			e.stopPropagation();
 			}
@@ -1774,21 +1774,22 @@ span.speed-indicator{
 
 		vController.vidControl.prototype.handleMouseDown_ = function(e)
 	{
-		if (e.path[0].tagName == 'INPUT' ||
-			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable)
+		let pth=e.composedPath()[0];
+		if (pth.tagName == 'INPUT' ||
+			pth.tagName == 'TEXTAREA' ||
+			pth.isContentEditable)
 		{
-				e.path[0].offsetParent.draggable = false;
+				pth.offsetParent.draggable = false;
 				return;
 		}
 		else
 		{
 
-			if (!ifAnyOf(e.path[0],this.barButtonsArr_))
+			if (!ifAnyOf(pth,this.barButtonsArr_))
 			{
 				//e.preventDefault();
 				e.stopPropagation();
-				e.path[0].offsetParent.draggable = true;
+				pth.offsetParent.draggable = true;
 				this.el_.style.cursor = 'grabbing';
 			}
 		}
@@ -1801,9 +1802,10 @@ span.speed-indicator{
 	
 	vController.vidControl.prototype.handleClick_ = function(e)
 	{
-		if (!(e.path[0].tagName == 'INPUT' ||
-			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable))
+		let pth=e.composedPath()[0];
+		if (!(pth.tagName == 'INPUT' ||
+			pth.tagName == 'TEXTAREA' ||
+			pth.isContentEditable))
 		{
 			if (e.target === this.switchButton_)
 			{				
@@ -1864,10 +1866,10 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.handleWheel_ = function(e)
 	{
-
-		if (!(e.path[0].tagName == 'INPUT' ||
-			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable))
+		let pth=e.composedPath()[0];
+		if (!(pth.tagName == 'INPUT' ||
+			pth.tagName == 'TEXTAREA' ||
+			pth.isContentEditable))
 
 		{
 
@@ -2035,14 +2037,14 @@ span.speed-indicator{
 	};
 
 	vController.vidControl.prototype.handleDblClick_ = function(e) {
-		
-			if (e.path[0].tagName == 'INPUT' ||
-			e.path[0].tagName == 'TEXTAREA' ||
-			e.path[0].isContentEditable)
+			let pth=e.composedPath()[0];
+			if (pth.tagName == 'INPUT' ||
+			pth.tagName == 'TEXTAREA' ||
+			pth.isContentEditable)
 		{
-			if (this.bgEl_.contains(e.path[0]))
+			if (this.bgEl_.contains(pth))
 			{
-				e.path[0].select();
+				pth.select();
 			}
 			else
 			{
