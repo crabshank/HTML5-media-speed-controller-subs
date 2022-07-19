@@ -4,7 +4,7 @@
 	"description": "Speed controls and subtitles for HTML5 media.",
 	"options_page": "options.html",     
 	"manifest_version": 3,
-	"version": "1.61",
+	"version": "1.62",
 	"content_scripts": [
 	{
 	  "matches": ["<all_urls>"],
@@ -13,7 +13,7 @@
 	  "all_frames": true
 	}
 	],
-	"permissions": ["fontSettings","activeTab","storage"],
+	"permissions": ["fontSettings","storage"],
 	"action": {
     "default_icon": "icon.png"
 	},
