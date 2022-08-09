@@ -388,7 +388,7 @@ var scClk = function(e)
 	if (strkCnt.c == 0)
 	{
 		e.preventDefault();
-		strkCnt.tg = e.path[0];
+		strkCnt.tg = e.composedPath()[0];
 
 		//console.log(e);
 
