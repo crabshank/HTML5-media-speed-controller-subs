@@ -2,6 +2,7 @@ var vController = vController || {};
 
 var hed=[...document.getElementsByTagName("head")][0];
 var bdy=[...document.getElementsByTagName("body")][0];
+var bls=[];
 
 function getTagNameShadow(docm, tgn){
 var shrc=[docm];
@@ -99,6 +100,7 @@ function findIndexTotalInsens(string, substring, index) {
 
 function blacklistMatch(array, t) {
     var found = false;
+	var blSite='';
     if (!((array.length == 1 && array[0] == "") || (array.length == 0))) {
         ts = t.toLocaleLowerCase();
         for (var i = 0; i < array.length; i++) {
@@ -132,11 +134,14 @@ function blacklistMatch(array, t) {
                 }
 
             }
-            i = (found) ? array.length - 1 : i;
+			if(found){
+				blSite = array[i];
+				i = array.length - 1;
+			}
         }
     }
     //console.log(found);
-    return found;
+    return [found,blSite];
 
 }
 
@@ -498,8 +503,10 @@ function runExt()
 		this.speedIndicator_ = null;
 
 		this.closeButton_ = null;
-
-		if (!isCurrentSiteBlacklisted())
+		
+		let isBl=isCurrentSiteBlacklisted();
+		
+		if (!isBl[0])
 		{
 			if(this.videoEl_.tagName=="VIDEO"){
 				
@@ -556,7 +563,10 @@ function runExt()
 		}
 		else
 		{
-			console.warn('Current site is blacklisted from speed controller.');
+			if(!bls.includes(isBl[1])){
+				bls.push(isBl[1]);
+				console.warn('Current site is blacklisted from speed controller ("'+isBl[1]+'")');
+			}
 		}
 	};
 
