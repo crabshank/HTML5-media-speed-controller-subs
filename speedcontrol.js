@@ -2284,24 +2284,35 @@ function timeAhead(video){
 		});
 	};
 
-	let timer;
-
-	const observer = new MutationObserver((mutations) =>
-	{
-		if (timer)
+	if(typeof observer ==="undefined" && typeof timer ==="undefined"){
+			var timer;
+			var timer_tm=null;
+		const observer = new MutationObserver((mutations) =>
 		{
-			clearTimeout(timer);
-		}
-		timer = setTimeout(() =>
-		{
-			vController.vidControl.insertAll();
-		}, 150);
-	});
+			if(timer){
+				clearTimeout(timer);
+				if(performance.now()-timer_tm>=1350){
+					vController.vidControl.insertAll();
+					timer_tm=performance.now();
+				}
+			}
+			
+			timer = setTimeout(() =>
+			{
+				vController.vidControl.insertAll();
+				timer_tm=performance.now();
+			}, 150);
+			
+			if(timer_tm ===null){
+				timer_tm=performance.now();
+			}
+		});
 
-	observer.observe(document,
-	{
-		attributes: true,
-		childList: true,
-		subtree: true
-	});
+		observer.observe(document,
+		{
+			attributes: true,
+			childList: true,
+			subtree: true
+		});
+	}
 }
