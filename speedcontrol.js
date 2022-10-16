@@ -33,7 +33,7 @@ while(srCnt<shrc_l){
 
 var isolator=document.createElement('style');
 
-var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;};";
+var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;} video::-webkit-media-controls{display: flex !important;}";
 
 function elRemover(el){
 	if(typeof el!=='undefined' && !!el){
