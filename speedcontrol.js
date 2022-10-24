@@ -4,36 +4,67 @@ var hed=[...document.getElementsByTagName("head")][0];
 var bdy=[...document.getElementsByTagName("body")][0];
 var bls=[];
 
-function getTagNameShadow(docm, tgn){
+function keepMatchesShadow(els,slc,isNodeName){
+   if(slc===false){
+      return els;
+   }else{
+      let out=[];
+   for(let i=0, len=els.length; i<len; i++){
+      let n=els[i];
+           if(isNodeName){
+	            if((n.nodeName.toLocaleLowerCase())===slc){
+	                out.push(n);
+	            }
+           }else{ //selector
+	               if(!!n.matches && typeof n.matches!=='undefined' && n.matches(slc)){
+	                  out.push(n);
+	               }
+           }
+   	}
+   	return out;
+   	}
+}
+
+function getMatchingNodesShadow(docm, slc, isNodeName, onlyShadowRoots){
+slc=(isNodeName && slc!==false)?(slc.toLocaleLowerCase()):slc;
 var shrc=[docm];
 var shrc_l=1;
-
+var out=[];
 let srCnt=0;
 
 while(srCnt<shrc_l){
-	allNodes=[shrc[srCnt],...shrc[srCnt].querySelectorAll('*')];
-	for(let i=0, len=allNodes.length; i<len; i++){
-		if(!!allNodes[i] && typeof allNodes[i] !=='undefined' && allNodes[i].tagName===tgn && i>0){
-			shrc.push(allNodes[i]);
-		}
-
-		if(!!allNodes[i].shadowRoot && typeof allNodes[i].shadowRoot !=='undefined'){
-			let c=allNodes[i].shadowRoot.children;
-			shrc.push(...c);
-		}
+	let curr=shrc[srCnt];
+	let sh=(!!curr.shadowRoot && typeof curr.shadowRoot !=='undefined')?true:false;
+	let nk=keepMatchesShadow([curr],slc,isNodeName);
+	let nk_l=nk.length;
+	
+	if( !onlyShadowRoots && nk_l>0){  
+		out.push(...nk);
 	}
+	
+	shrc.push(...curr.childNodes);
+	
+	if(sh){
+		   let cs=curr.shadowRoot;
+		   let csc=[...cs.childNodes];
+			   if(onlyShadowRoots){
+			      if(nk_l>0){
+			       out.push({root:nk[0], childNodes:csc});
+			      }
+			   }
+			   shrc.push(...csc);
+	}
+
 	srCnt++;
 	shrc_l=shrc.length;
 }
-	shrc=shrc.slice(1);
-	let out=shrc.filter((c)=>{return c.tagName===tgn;});
-	
-	return out;
+
+return out;
 }
 
-var isolator=document.createElement('style');
-
 var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;} video::-webkit-media-controls{display: flex !important;}";
+
+var isolator_tags=[];
 
 function elRemover(el){
 	if(typeof el!=='undefined' && !!el){
@@ -871,7 +902,6 @@ span.speed-indicator{
 			}
 		});
 		
-		hed.insertAdjacentElement('afterbegin',isolator);
 		self.videoEl_.addEventListener('mouseenter', c_hide(self.el_, self.bgEl_, self.videoEl_, self), true);
 	};
 
@@ -1356,7 +1386,7 @@ span.speed-indicator{
 				thisSub.subsButton_.textContent = '_';
 				thisSub.s_.origTrack = 0;
 
-				let tracks = getTagNameShadow(document,'TRACK');
+				let tracks = getMatchingNodesShadow(document,'TRACK',true,false);
 				for (let i = 0; i < tracks.length; i++)
 				{
 					if (tracks[i].src = thisSub.s_.track.src)
@@ -1423,9 +1453,9 @@ span.speed-indicator{
 			clearTimeout(disap);
 			//c_hide(this.el_,this.bgEl_, this.videoEl_,this);
 			if(this.isol_==1){
-			console.log('Perma-show active! - Video isolated.');
+			console.log('HTML5 Video Speed Control: Perma-show active! - Video isolated.');
 			}else{
-			console.log('Perma-show active!');
+			console.log('HTML5 Video Speed Control: Perma-show active!');
 			}
 		}
 		else if ((this.permashow_ == 1) && (this.permahide_ == 0))
@@ -1438,9 +1468,9 @@ span.speed-indicator{
 			this.el_.style.visibility = 'hidden';
 			this.el_.style.opacity = '';
 			if(this.isol_==1){
-			console.log('Perma-hide active! - Video isolated.');
+			console.log('HTML5 Video Speed Control: Perma-hide active! - Video isolated.');
 			}else{
-			console.log('Perma-hide active!');
+			console.log('HTML5 Video Speed Control: Perma-hide active!');
 			}
 		}
 		else if ((this.permashow_ == 0) && (this.permahide_ == 1))
@@ -1448,20 +1478,49 @@ span.speed-indicator{
 			this.permahide_ = 0;
 			this.isol_=(this.isol_==0)?1:0;
 			if(this.isol_==1){
-			isolator.innerHTML=isolator_HTML;
+			let shds=getMatchingNodesShadow(document,false,true,true);
+			let vInsts=vController.vidControl.instances.map((s)=>{return s.el_});
+			shds=shds.filter((r)=>{return !vInsts.includes(r.root);})
+			let shdows=[hed,...shds.map((n)=>{return n.root;})];
+			let shdows_ch=[[...hed.children],...shds.map((n)=>{return n.childNodes;})];
+			isolator_tags=[];
+
+			for(let j=0, len_j=shdows.length; j<len_j; j++){
+				try{
+						let isolts=shdows_ch[j].filter((c)=>{return (c.nodeName==='STYLE' && c.innerHTML===isolator_HTML);});
+						
+						if(isolts.length>0){
+								isolator_tags.push(...isolts);
+						}else{
+							let s=document.createElement('style');
+							s.innerHTML=isolator_HTML;
+							if(j===0){
+								shdows[j].insertAdjacentElement('afterbegin',s);
+							}else{
+								shdows[j].shadowRoot.prepend(s);
+							}
+							isolator_tags.push(s);
+						}
+						
+				}catch(e){;}
+			}
 			this.videoEl_.style.display = 'initial';
 			this.videoEl_.style.visibility = 'initial';
 			this.videoEl_.controls = true;
 			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
-			console.log('No permanence! - Video isolated.');
+			console.log('HTML5 Video Speed Control: No permanence! - Video isolated.');
 			}else{
-			isolator.innerHTML="";
+			for(let j=0, len_j=isolator_tags.length; j<len_j; j++){
+				let ij=isolator_tags[j];
+				ij.innerHTML='';
+				elRemover(ij);
+			}
 			this.videoEl_.controls=(this.videoEl_.getAttribute('def_ctrls')=='false')?false:true;
 			c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 			this.el_.style.display = 'initial';
 			this.el_.style.visibility = 'initial';
 			this.el_.style.opacity = '';
-			console.log('No permanence!');
+			console.log('HTML5 Video Speed Control: No permanence!');
 			}
 			
 		}else{
@@ -2246,8 +2305,8 @@ function timeAhead(video){
 	vController.vidControl.insertAll = function()
 	{
 		var videoTags = [
-			...getTagNameShadow(document,'VIDEO'),
-			...getTagNameShadow(document,'AUDIO')
+			...getMatchingNodesShadow(document,'VIDEO',true,false),
+			...getMatchingNodesShadow(document,'AUDIO',true,false)
 		];
 
 	if(vController.vidControl.instances.length>0){
