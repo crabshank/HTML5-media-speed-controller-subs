@@ -62,9 +62,9 @@ while(srCnt<shrc_l){
 return out;
 }
 
-var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;} video::-webkit-media-controls{display: flex !important;}";
+var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;} video::-webkit-media-controls{display: flex !important; opacity: 1 !important;}";
 
-var isolator_tags=[];
+var hideControls_HTML="video::-webkit-media-controls{opacity: 0 !important; pointer-events: none !important;}";
 
 function elRemover(el){
 	if(typeof el!=='undefined' && !!el){
@@ -536,6 +536,53 @@ function runExt()
 		this.closeButton_ = null;
 		
 		let isBl=isCurrentSiteBlacklisted();
+		
+		var hcs = document.createElement('style');
+		this.videoEl_.appendChild(hcs);
+		
+		this.hideControlTag=hcs;
+		
+		this.hideControlTagNext=false;
+		
+		if(typeof v_observer ==="undefined"){
+			const v_observer = new MutationObserver((mutations) =>
+			{
+				let vix=-1;
+				let mix=-1;
+				
+				for(let i=0, len_i=mutations.length; i<len_i; i++){
+					let mi=mutations[i];
+					for(let j=0, len_j=vController.vidControl.instances.length; j<len_j; j++){
+						let vis=vController.vidControl.instances[j];
+						if(mi.target===vis.videoEl_){
+							vix=j;
+							mix=i;
+							j=len_j-1;
+							i=len_i-1;
+						}
+					}
+				}
+				
+				if(vix>=0){ //video in mutation found in instances array
+					let m=mutations[mix];
+					let cv=vController.vidControl.instances[vix];
+					if(cv.hideControlTagNext){
+						if(m.target.controls===true){
+							cv.hideControlTag.innerHTML=hideControls_HTML;
+							cv.hideControlTagNext=false;
+						}
+					}else{
+						cv.hideControlTag.innerHTML='';
+					}
+				}
+				
+			});
+
+			v_observer.observe(targetEl,
+			{
+				attributeFilter: ["controls"]
+			});
+		}
 		
 		if (!isBl[0])
 		{
@@ -1422,6 +1469,7 @@ span.speed-indicator{
 
 	vController.vidControl.prototype.setSpeed = function(s)
 	{
+		this.hideControlTagNext=true;
 		c_hide(this.el_, this.bgEl_, this.videoEl_, this);
 		this.videoEl_.playbackRate = s;
 	};
