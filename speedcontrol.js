@@ -62,6 +62,8 @@ while(srCnt<shrc_l){
 return out;
 }
 
+var isolator_tags=[];
+
 var isolator_HTML="*:not(video):not(audio):not(.vController-video-control){visibility:hidden !important;} video::-webkit-media-controls{display: flex !important; opacity: 1 !important;}";
 
 var hideControls_HTML="video::-webkit-media-controls{opacity: 0 !important; pointer-events: none !important;}";
