@@ -593,31 +593,31 @@ function runExt()
 				if (colMat)
 				{
 
-					var divm = document.createElement('div');
-					divm.innerHTML = "<svg><filter id='filter-sample'><feColorMatrix type='matrix' values='" + clrMtrx + "'></feColorMatrix></filter></svg>";
-
-					divm.setAttribute('id', 'filter-sample_div');
-					divm.setAttribute('style', 'display: none;');
-					if (document.getElementById('filter-sample_div'))
-					{
-						document.getElementById('filter-sample_div').remove();
-					}
-					this.videoEl_.appendChild(divm);
-
-					console.log(divm);
-
+let clrMtrx_tag=`<svg xmlns="http://www.w3.org/2000/svg">
+	<filter id="clrMtrx_svg">
+		<feColorMatrix type="matrix"
+			values="${clrMtrx}">
+		</feColorMatrix>
+	</filter>
+</svg>`;
+					
+			let svg_blob = new Blob([clrMtrx_tag], { type: 'image/svg+xml' });
+			let svg_url = URL.createObjectURL(svg_blob);
+			this.clrMtrx_blob=svg_url;
+					
 					if (vidCSS)
 					{
 
-						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample") ' + videoCSS;
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + " filter:"+`url('${svg_url}#clrMtrx_svg')` + videoCSS;
 
 					}
 					else
 					{
 
-						this.videoEl_.style.cssText = this.videoEl_.style.cssText + ' filter: url("#filter-sample") !important;';
+						this.videoEl_.style.cssText = this.videoEl_.style.cssText + " filter:" +`url('${svg_url}#clrMtrx_svg') !important;`;
 
 					}
+					
 
 				}else{
 
