@@ -42,7 +42,9 @@ while(srCnt<shrc_l){
 		out.push(...nk);
 	}
 	
-	shrc.push(...curr.childNodes);
+	for(let i=0, len=curr.childNodes.length; i<len; i++){
+		shrc.push(curr.childNodes[i]);
+	}
 	
 	if(sh){
 		   let cs=curr.shadowRoot;
