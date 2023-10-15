@@ -4,7 +4,7 @@
 	"description": "Speed controls and subtitles for HTML5 media.",
 	"options_page": "options.html",     
 	"manifest_version": 3,
-	"version": "1.7",
+	"version": "1.70",
 	"content_scripts": [
 	{
 	  "matches": ["<all_urls>"],
