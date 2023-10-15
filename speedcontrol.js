@@ -771,7 +771,7 @@ span.speed-indicator{
 		forwardButton.classList.add('vController-btn', 'forwards');
 		pipButton.textContent = '⧉';
 		pipButton.classList.add('vController-btn', 'pip');
-		if(this.videoEl_.tagName!=='VIDEO'){
+		if(this.videoEl_.tagName!=='VIDEO' || !this.videoEl_.videoWidth>0 || !this.videoEl_.videoHeight>0 ){
 			pipButton.style.display='none';
 		}
 		linkButton.textContent = '🔗';
